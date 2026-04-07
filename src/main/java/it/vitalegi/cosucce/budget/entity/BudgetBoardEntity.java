@@ -1,6 +1,5 @@
-package it.vitalegi.cosucce.security.entity;
+package it.vitalegi.cosucce.budget.entity;
 
-import it.vitalegi.cosucce.budget.entity.BudgetBoardUserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,34 +20,30 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Entity(name = "UserData")
-@Table(name = "user_data")
+@Entity(name = "BudgetBoard")
+@Table(name = "budget_board")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDataEntity {
-
+public class BudgetBoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BudgetBoardUserEntity> boards;
-
-    private String issuer;
-    private String subject;
+    private UUID boardId;
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BudgetBoardUserEntity> boardUsers;
+    private String name;
     private Instant creationDate;
     private Instant lastUpdate;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserDataEntity that = (UserDataEntity) o;
-        return Objects.equals(issuer, that.issuer) && Objects.equals(subject, that.subject) && Objects.equals(userId, that.userId);
+        BudgetBoardEntity that = (BudgetBoardEntity) o;
+        return Objects.equals(boardId, that.boardId) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(issuer, subject, userId);
+        return Objects.hash(boardId, name);
     }
 }

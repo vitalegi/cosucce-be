@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,7 +52,6 @@ public class OidcResourceTests {
             var result = mockMvc.perform(post("/oidc/token").contentType(MediaType.APPLICATION_JSON).content("""
                             {"code":"A", "redirectUrl":"http://localhost:8080/redirect"}
                             """)) //
-                    .andDo(print()) //
                     .andExpect(status().isOk()) //
                     .andExpect(cookie().exists("refresh_token")) //
                     .andExpect(cookie().maxAge("refresh_token", 1000)) //
@@ -77,7 +75,6 @@ public class OidcResourceTests {
             var result = mockMvc.perform(post("/oidc/token").contentType(MediaType.APPLICATION_JSON).content("""
                             {"code":"A", "redirectUrl":"http://localhost:8080/redirect"}
                             """)) //
-                    .andDo(print()) //
                     .andExpect(status().is(500)) //
                     .andExpect(cookie().doesNotExist("refresh_token")) //
                     .andReturn();
@@ -96,7 +93,6 @@ public class OidcResourceTests {
         void given_validRequest_then_validResponse() throws Exception {
             when(cognitoService.refresh("rt")).thenReturn(cognitoOidcResponse());
             var result = mockMvc.perform(post("/oidc/refresh").contentType(MediaType.APPLICATION_JSON).cookie(new Cookie("refresh_token", "rt"))) //
-                    .andDo(print()) //
                     .andExpect(status().isOk()) //
                     .andExpect(cookie().doesNotExist("refresh_token")) //
                     .andReturn();
@@ -112,7 +108,6 @@ public class OidcResourceTests {
         void given_requestWithInvalidRefreshToken_then_error() throws Exception {
             when(cognitoService.refresh("rt")).thenThrow(new RuntimeException("Invalid token"));
             mockMvc.perform(post("/oidc/refresh").contentType(MediaType.APPLICATION_JSON).cookie(new Cookie("refresh_token", "rt"))) //
-                    .andDo(print()) //
                     .andExpect(status().is(500)) //
                     .andExpect(cookie().doesNotExist("refresh_token"));
         }
@@ -120,7 +115,6 @@ public class OidcResourceTests {
         @Test
         void given_requestWithoutRefreshToken_then_error() throws Exception {
             mockMvc.perform(post("/oidc/refresh").contentType(MediaType.APPLICATION_JSON)) //
-                    .andDo(print()) //
                     .andExpect(status().is(500)) //
                     .andExpect(cookie().doesNotExist("refresh_token"));
             verify(cognitoService, times(0)).refresh(any());
@@ -132,7 +126,6 @@ public class OidcResourceTests {
         @Test
         void then_validResponse() throws Exception {
             mockMvc.perform(get("/oidc/logout").cookie(new Cookie("refresh_token", "rt"))) //
-                    .andDo(print()) //
                     .andExpect(status().isOk()) //
                     .andExpect(cookie().exists("refresh_token")) //
                     .andExpect(cookie().maxAge("refresh_token", -1)) //
