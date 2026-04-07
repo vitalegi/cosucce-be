@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce;
 
+import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,5 +18,12 @@ public class GlobalExceptionHandler {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), ex.getMessage());
         log.error("Error on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UnauthorizedBoardAccessException.class)
+    public ResponseEntity<GenericErrorResponse> handleUnauthorizedBoardAccessException(UnauthorizedBoardAccessException ex, HttpServletRequest request) {
+        var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), ex.getMessage());
+        log.info("Forbidden access on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

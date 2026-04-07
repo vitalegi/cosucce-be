@@ -19,32 +19,32 @@ public class MockAuth {
         return admin(UUID.randomUUID().toString());
     }
 
-    public static RequestPostProcessor admin(String uid) {
-        return user(uid, Collections.singletonList("ADMIN"));
+    public static RequestPostProcessor admin(String subject) {
+        return user(subject, Collections.singletonList("ADMIN"));
     }
 
     public static RequestPostProcessor member() {
         return member(UUID.randomUUID().toString());
     }
 
-    public static RequestPostProcessor member(String uid) {
-        return user(uid, Collections.singletonList("MEMBER"));
+    public static RequestPostProcessor member(String subject) {
+        return user(subject, Collections.singletonList("MEMBER"));
     }
 
     public static RequestPostProcessor guest() {
         return guest(UUID.randomUUID().toString());
     }
 
-    public static RequestPostProcessor guest(String uid) {
-        return user(uid, Collections.emptyList());
+    public static RequestPostProcessor guest(String subject) {
+        return user(subject, Collections.emptyList());
     }
 
-    public static RequestPostProcessor user(String uid, List<String> groups) {
+    public static RequestPostProcessor user(String subject, List<String> groups) {
         var jwt = new Jwt("token", //
                 Instant.now(),//
                 Instant.now().plus(10, ChronoUnit.MINUTES), //
                 Map.of("kid", "123", "alg", "RS256"), //
-                Map.of("cognito:groups", groups, "iss", ISSUER, "sub", uid));
+                Map.of("cognito:groups", groups, "iss", ISSUER, "sub", subject));
         return SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt);
     }
 

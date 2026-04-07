@@ -21,7 +21,11 @@ public class UserDataUtil {
     }
 
     public UUID user(List<String> roles) {
-        var user = userDataService.getUserIdentity(MockAuth.ISSUER, UUID.randomUUID().toString(), roles);
+        return user(UUID.randomUUID().toString(), roles);
+    }
+
+    public UUID user(String subject, List<String> roles) {
+        var user = userDataService.getUserIdentity(MockAuth.ISSUER, subject, roles);
         return user.getUserId();
     }
 }

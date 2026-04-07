@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -47,6 +48,17 @@ public class BudgetBoardService {
 
     public void deleteBoard(UUID boardId) {
         budgetBoardRepository.deleteById(boardId);
+    }
+
+    public void addBudgetBoardUser(UUID boardId, UUID userId, BudgetBoardRole role) {
+        var board = budgetBoardRepository.findById(boardId).orElseThrow();
+        var user = userDataRepository.findById(userId).orElseThrow();
+        addBudgetBoardUserEntity(board, user, role);
+    }
+
+    public List<BudgetBoardUser> getBudgetBoardUsers(UUID boardId) {
+        var entities = budgetBoardUserRepository.findAllByBoardId(boardId);
+        return entities.stream().map(this::mapBudgetBoard).toList();
     }
 
     protected BudgetBoardEntity addBoardEntity(String name) {
@@ -84,6 +96,7 @@ public class BudgetBoardService {
 
     protected BudgetBoardUser mapBudgetBoard(BudgetBoardUserEntity entity) {
         var out = new BudgetBoardUser();
+        out.setBoardId(entity.getId().getBoardId());
         out.setUserId(entity.getId().getUserId());
         out.setRole(entity.getRole());
         out.setUsername("TODO");

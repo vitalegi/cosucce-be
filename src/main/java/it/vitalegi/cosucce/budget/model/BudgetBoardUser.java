@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 public class BudgetBoardUser {
+    private UUID boardId;
     private UUID userId;
     private String username;
     private BudgetBoardRole role;
