@@ -1,3 +1,64 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+  tomcat:
+    basedir: ${TOMCAT_BASEDIR:./tomcat}
+    accesslog:
+      enabled: true
+      buffered: false
+      directory: logs/
+      prefix: access_log_
+      suffix: .log
+      file-date-format: yyyy-MM-dd
+      pattern: "%{yyyy-MM-dd'T'HH:mm:ss.SSSX}t [%I] \"%h\" %s b_sent=%b t_proc=%D t_commit=%F %H %m \"%U%q\""
+
 spring:
   application:
     name: cosucce
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:file:db/app;DB_CLOSE_ON_EXIT=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  liquibase:
+    enabled: true
+    change-log: 'classpath:db/liquibase-changelog.yaml'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OIDC_JWKS_URI}
+          issuer-uri: ${OIDC_ISSUER}
+          jws-algorithm: RS256
+
+oidc:
+  authorization_url: ${OIDC_AUTHORIZATION_URL}
+  clientId: ${OIDC_CLIENT_ID}
+  cookie:
+    maxAge: 3600
+    secure: false
+    httpOnly: false
+
+security:
+  cors:
+    allowedOrigins: http://localhost:9000
+    allowedMethods: GET, POST, PUT, DELETE
+    allowCredentials: true
+    allowedHeaders: Content-Type, Access-Control-Request-Method, Access-Control-Allow-Credentials, Access-Control-Allow-Origin, Access-Control-Allow-Headers, x-requested-with, Authorization, origin, accept
+  rbac:
+    ADMIN: BUDGET_VIEW
+    MEMBER: BUDGET_VIEW
+
+logging.level:
+  org.springframework: INFO
