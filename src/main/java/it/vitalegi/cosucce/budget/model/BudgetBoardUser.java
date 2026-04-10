@@ -10,7 +10,6 @@ import java.util.UUID;
 public class BudgetBoardUser {
     private UUID boardId;
     private UUID userId;
-    private String username;
     private BudgetBoardRole role;
     private Instant creationDate;
     private Instant lastUpdate;

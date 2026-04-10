@@ -1,20 +1,33 @@
 package it.vitalegi.cosucce.budget.repository;
 
-import it.vitalegi.cosucce.budget.entity.BudgetBoardUserEntity;
-import it.vitalegi.cosucce.budget.entity.BudgetBoardUserId;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
+import it.vitalegi.cosucce.db.tables.records.BudgetBoardUserRecord;
+import lombok.RequiredArgsConstructor;
+import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
-@Repository
-public interface BudgetBoardUserRepository extends JpaRepository<BudgetBoardUserEntity, BudgetBoardUserId> {
+import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_USER;
 
-    @EntityGraph(attributePaths = {"board", "user"})
-    @Query("SELECT bbu FROM BudgetBoardUser bbu WHERE bbu.board.boardId = :boardId")
-    List<BudgetBoardUserEntity> findAllByBoardId(@Param("boardId") UUID boardId);
+@Repository
+@RequiredArgsConstructor
+public class BudgetBoardUserRepository {
+    final DSLContext dsl;
+
+    public void add(UUID boardId, UUID userId, BudgetBoardRole role) {
+        var record = dsl.newRecord(BUDGET_BOARD_USER);
+        record.set(BUDGET_BOARD_USER.BOARD_ID, boardId);
+        record.set(BUDGET_BOARD_USER.USER_ID, userId);
+        record.set(BUDGET_BOARD_USER.BUDGET_BOARD_ROLE, role);
+        record.set(BUDGET_BOARD_USER.CREATION_DATE, Instant.now());
+        record.set(BUDGET_BOARD_USER.LAST_UPDATE, Instant.now());
+        record.store();
+    }
+
+    public Result<BudgetBoardUserRecord> getAllByBoardId(UUID boardId) {
+        return dsl.selectFrom(BUDGET_BOARD_USER.where(BUDGET_BOARD_USER.BOARD_ID.eq(boardId))).fetch();
+    }
 }

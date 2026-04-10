@@ -6,6 +6,7 @@ import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAddRequest;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardUpdateRequest;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
+import it.vitalegi.cosucce.budget.repository.BudgetBoardUserRepository;
 import it.vitalegi.cosucce.budget.service.BudgetBoardService;
 import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,8 @@ public class BudgetBoardResourceTests {
     @Autowired
     MockMvc mockMvc;
     @Autowired
+    BudgetBoardUserRepository budgetBoardUserRepository;
+    @Autowired
     BudgetBoardService budgetBoardService;
     @Autowired
     UserDataUtil userDataUtil;
@@ -68,7 +71,7 @@ public class BudgetBoardResourceTests {
         subject = UUID.randomUUID().toString();
         boardMemberId = userDataUtil.user(subject, List.of("MEMBER"));
         boardMember = MockAuth.member(subject);
-        budgetBoardService.addBudgetBoardUser(boardId, boardMemberId, BudgetBoardRole.MEMBER);
+        budgetBoardUserRepository.add(boardId, boardMemberId, BudgetBoardRole.MEMBER);
         log.info("BoardId: {}", boardId);
         log.info("OwnerId: {}", boardOwnerId);
         log.info("MemberId: {}", boardMemberId);
@@ -156,14 +159,12 @@ public class BudgetBoardResourceTests {
             assertEquals(boardOwnerId, owner.getUserId());
             assertEquals(boardId, owner.getBoardId());
             assertEquals(BudgetBoardRole.OWNER, owner.getRole());
-            assertEquals("TODO", owner.getUsername());
             assertNotNull(owner.getCreationDate());
             assertNotNull(owner.getLastUpdate());
             var member = response.getUsers().stream().filter(e -> e.getUserId().equals(boardMemberId)).findFirst().orElseThrow();
             assertEquals(boardMemberId, member.getUserId());
             assertEquals(boardId, member.getBoardId());
             assertEquals(BudgetBoardRole.MEMBER, member.getRole());
-            assertEquals("TODO", member.getUsername());
             assertNotNull(member.getCreationDate());
             assertNotNull(member.getLastUpdate());
         }

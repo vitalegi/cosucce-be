@@ -30,7 +30,13 @@
         <java.version>17</java.version>
         <argLine/>
     </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-liquibase</artifactId>
@@ -46,10 +52,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <dependency>
@@ -157,6 +159,75 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <executions>
+                    <execution>
+                        <id>jooq-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generator>
+                                <database>
+                                    <name>org.jooq.meta.extensions.liquibase.LiquibaseDatabase</name>
+                                    <properties>
+                                        <property>
+                                            <key>rootPath</key>
+                                            <value>${basedir}/src/main/resources</value>
+                                        </property>
+                                        <property>
+                                            <key>scripts</key>
+                                            <value>db/liquibase-changelog.yaml</value>
+                                        </property>
+                                        <property>
+                                            <key>includeLiquibaseTables</key>
+                                            <value>false</value>
+                                        </property>
+                                        <property>
+                                            <key>useParsingConnection</key>
+                                            <value>false</value>
+                                        </property>
+                                    </properties>
+                                    <forcedTypes>
+                                        <forcedType>
+                                            <userType>java.time.Instant</userType>
+                                            <lambdaConverter>
+                                                <from>t -> t == null ? null : t.toInstant(java.time.ZoneOffset.UTC)</from>
+                                                <to>i -> i == null ? null :
+                                                    java.time.LocalDateTime.ofInstant(i, java.time.ZoneId.of("UTC"))
+                                                </to>
+                                            </lambdaConverter>
+                                            <includeExpression>.*</includeExpression>
+                                            <includeTypes>TIMESTAMP WITH TIME ZONE|TIMESTAMP</includeTypes>
+                                        </forcedType>
+                                        <forcedType>
+                                            <userType>it.vitalegi.cosucce.budget.constant.BudgetBoardRole</userType>
+                                            <enumConverter>true</enumConverter>
+                                            <includeExpression>.*\.budget_board_role</includeExpression>
+                                        </forcedType>
+                                    </forcedTypes>
+                                </database>
+                                <target>
+                                    <packageName>it.vitalegi.cosucce.db</packageName>
+                                    <directory>target/generated-sources/jooq</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-meta-extensions-liquibase</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
         </plugins>
     </build>
 
