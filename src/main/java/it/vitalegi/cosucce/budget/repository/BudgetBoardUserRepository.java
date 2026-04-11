@@ -7,7 +7,6 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,7 +17,7 @@ import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_USER;
 public class BudgetBoardUserRepository {
     final DSLContext dsl;
 
-    public void add(UUID boardId, UUID userId, BudgetBoardRole role) {
+    public void addEntity(UUID boardId, UUID userId, BudgetBoardRole role) {
         var record = dsl.newRecord(BUDGET_BOARD_USER);
         record.set(BUDGET_BOARD_USER.BOARD_ID, boardId);
         record.set(BUDGET_BOARD_USER.USER_ID, userId);
@@ -28,7 +27,7 @@ public class BudgetBoardUserRepository {
         record.store();
     }
 
-    public Result<BudgetBoardUserRecord> getAllByBoardId(UUID boardId) {
+    public Result<BudgetBoardUserRecord> getEntitiesByBoardId(UUID boardId) {
         return dsl.selectFrom(BUDGET_BOARD_USER.where(BUDGET_BOARD_USER.BOARD_ID.eq(boardId))).fetch();
     }
 }

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("test")
-public class BudgetBoardServiceTests {
+public class BudgetBoardServiceBoardTests {
 
     @Autowired
     DSLContext dsl;
@@ -73,7 +73,7 @@ public class BudgetBoardServiceTests {
             var userId1 = userDataUtil.user();
             var id = budgetBoardService.addBoard("Test1", userId1);
 
-            var actual = budgetBoardService.getBudgetBoard(id);
+            var actual = budgetBoardService.getBoard(id);
             assertEquals("Test1", actual.getName());
             assertEquals(id, actual.getBoardId());
             assertNotNull(actual.getCreationDate());

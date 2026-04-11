@@ -29,7 +29,7 @@ public class BudgetAuthenticationService {
     }
 
     protected Stream<BudgetBoardPermission> getPermissions(UUID userId, UUID boardId) {
-        return budgetBoardService.getBudgetBoardUsers(boardId).stream() //
+        return budgetBoardService.getBoardUsers(boardId).stream() //
                 .filter(e -> e.getUserId().equals(userId)) //
                 .map(BudgetBoardUser::getRole) //
                 .flatMap(this::getPermissions);

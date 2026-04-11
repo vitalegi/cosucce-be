@@ -7,7 +7,6 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class BudgetBoardRepository {
     final DSLContext dsl;
 
 
-    public UUID add(String name) {
+    public UUID addEntity(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
@@ -35,7 +34,7 @@ public class BudgetBoardRepository {
         return record.getBoardId();
     }
 
-    public void update(UUID boardId, String name) {
+    public void updateEntity(UUID boardId, String name) {
         dsl.update(BUDGET_BOARD) //
                 .set(BUDGET_BOARD.NAME, name) //
                 .set(BUDGET_BOARD.LAST_UPDATE, LocalDateTime.now()) //
@@ -43,7 +42,7 @@ public class BudgetBoardRepository {
                 .execute();
     }
 
-    public Map.Entry<BudgetBoardRecord, Result<BudgetBoardUserRecord>> getById(UUID boardId) {
+    public Map.Entry<BudgetBoardRecord, Result<BudgetBoardUserRecord>> getEntityById(UUID boardId) {
         var results = dsl //
                 .select(BUDGET_BOARD.fields()) //
                 .select(BUDGET_BOARD_USER.fields()) //
@@ -60,7 +59,7 @@ public class BudgetBoardRepository {
         return map.entrySet().iterator().next();
     }
 
-    public void deleteById(UUID boardId) {
+    public void deleteEntityById(UUID boardId) {
         dsl.deleteFrom(BUDGET_BOARD) //
                 .where(BUDGET_BOARD.BOARD_ID.eq(boardId)) //
                 .execute();

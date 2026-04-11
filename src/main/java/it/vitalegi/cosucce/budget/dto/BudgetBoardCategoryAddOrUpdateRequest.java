@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BudgetBoardUpdateRequest {
-    String name;
+public class BudgetBoardCategoryAddOrUpdateRequest {
+    String label;
+    String icon;
+    boolean enabled;
+    String etag;
 }
