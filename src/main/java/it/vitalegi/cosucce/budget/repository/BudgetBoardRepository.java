@@ -8,6 +8,7 @@ import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,8 +29,8 @@ public class BudgetBoardRepository {
         var record = dsl.newRecord(BUDGET_BOARD);
         record.set(BUDGET_BOARD.BOARD_ID, id);
         record.set(BUDGET_BOARD.NAME, name);
-        record.set(BUDGET_BOARD.CREATION_DATE, Instant.now());
-        record.set(BUDGET_BOARD.LAST_UPDATE, Instant.now());
+        record.set(BUDGET_BOARD.CREATION_DATE, LocalDateTime.now());
+        record.set(BUDGET_BOARD.LAST_UPDATE, LocalDateTime.now());
         record.store();
         return record.getBoardId();
     }
@@ -37,7 +38,7 @@ public class BudgetBoardRepository {
     public void update(UUID boardId, String name) {
         dsl.update(BUDGET_BOARD) //
                 .set(BUDGET_BOARD.NAME, name) //
-                .set(BUDGET_BOARD.LAST_UPDATE, Instant.now()) //
+                .set(BUDGET_BOARD.LAST_UPDATE, LocalDateTime.now()) //
                 .where(BUDGET_BOARD.BOARD_ID.eq(boardId)) //
                 .execute();
     }

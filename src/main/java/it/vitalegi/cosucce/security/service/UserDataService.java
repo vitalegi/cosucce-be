@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -30,8 +31,8 @@ public class UserDataService {
                 .set(USER_DATA.USER_ID, UUID.randomUUID()) //
                 .set(USER_DATA.ISSUER, issuer) //
                 .set(USER_DATA.SUBJECT, subject) //
-                .set(USER_DATA.CREATION_DATE, Instant.now()) //
-                .set(USER_DATA.LAST_UPDATE, Instant.now()) //
+                .set(USER_DATA.CREATION_DATE, LocalDateTime.now()) //
+                .set(USER_DATA.LAST_UPDATE, LocalDateTime.now()) //
                 .onDuplicateKeyIgnore() //
                 .execute();
 

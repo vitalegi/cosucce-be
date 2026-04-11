@@ -8,6 +8,7 @@ import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_USER;
@@ -22,8 +23,8 @@ public class BudgetBoardUserRepository {
         record.set(BUDGET_BOARD_USER.BOARD_ID, boardId);
         record.set(BUDGET_BOARD_USER.USER_ID, userId);
         record.set(BUDGET_BOARD_USER.BUDGET_BOARD_ROLE, role);
-        record.set(BUDGET_BOARD_USER.CREATION_DATE, Instant.now());
-        record.set(BUDGET_BOARD_USER.LAST_UPDATE, Instant.now());
+        record.set(BUDGET_BOARD_USER.CREATION_DATE, LocalDateTime.now());
+        record.set(BUDGET_BOARD_USER.LAST_UPDATE, LocalDateTime.now());
         record.store();
     }
 

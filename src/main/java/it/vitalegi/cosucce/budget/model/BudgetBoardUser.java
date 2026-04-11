@@ -4,6 +4,7 @@ import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
 import lombok.Data;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -11,6 +12,6 @@ public class BudgetBoardUser {
     private UUID boardId;
     private UUID userId;
     private BudgetBoardRole role;
-    private Instant creationDate;
-    private Instant lastUpdate;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdate;
 }

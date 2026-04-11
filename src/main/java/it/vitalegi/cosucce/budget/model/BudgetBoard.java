@@ -3,6 +3,7 @@ package it.vitalegi.cosucce.budget.model;
 import lombok.Data;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,6 @@ public class BudgetBoard {
     private UUID boardId;
     private String name;
     private List<BudgetBoardUser> users;
-    private Instant creationDate;
-    private Instant lastUpdate;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdate;
 }

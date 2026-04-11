@@ -194,17 +194,6 @@
                                     </properties>
                                     <forcedTypes>
                                         <forcedType>
-                                            <userType>java.time.Instant</userType>
-                                            <lambdaConverter>
-                                                <from>t -> t == null ? null : t.toInstant(java.time.ZoneOffset.UTC)</from>
-                                                <to>i -> i == null ? null :
-                                                    java.time.LocalDateTime.ofInstant(i, java.time.ZoneId.of("UTC"))
-                                                </to>
-                                            </lambdaConverter>
-                                            <includeExpression>.*</includeExpression>
-                                            <includeTypes>TIMESTAMP WITH TIME ZONE|TIMESTAMP</includeTypes>
-                                        </forcedType>
-                                        <forcedType>
                                             <userType>it.vitalegi.cosucce.budget.constant.BudgetBoardRole</userType>
                                             <enumConverter>true</enumConverter>
                                             <includeExpression>.*\.budget_board_role</includeExpression>
