@@ -2,7 +2,6 @@ package it.vitalegi.cosucce.budget.model;
 
 import lombok.Data;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

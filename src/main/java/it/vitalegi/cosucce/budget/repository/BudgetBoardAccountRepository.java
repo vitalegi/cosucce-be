@@ -1,7 +1,6 @@
 package it.vitalegi.cosucce.budget.repository;
 
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardAccountRecord;
-import it.vitalegi.cosucce.db.tables.records.BudgetBoardCategoryRecord;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_ACCOUNT;
-import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_CATEGORY;
 
 @Repository
 @RequiredArgsConstructor

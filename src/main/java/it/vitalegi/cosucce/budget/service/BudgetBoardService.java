@@ -43,6 +43,13 @@ public class BudgetBoardService {
         return mapBudgetBoard(record.getKey(), record.getValue());
     }
 
+    public List<BudgetBoard> getBoardsVisibleByUser(UUID userId) {
+        return budgetBoardRepository.getEntitiesByUserId(userId) //
+                .stream() //
+                .map(e -> mapBudgetBoard(e.getKey(), e.getValue())) //
+                .toList();
+    }
+
     public void deleteBoard(UUID boardId) {
         budgetBoardRepository.deleteEntityById(boardId);
     }

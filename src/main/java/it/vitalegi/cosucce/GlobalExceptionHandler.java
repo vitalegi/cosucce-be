@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce;
 
 import it.vitalegi.cosucce.security.exception.MissingCookieException;
+import it.vitalegi.cosucce.security.exception.UnauthorizedAccessException;
 import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingCookieException.class)
-    public ResponseEntity<GenericErrorResponse> handleUnauthorizedBoardAccessException(MissingCookieException ex, HttpServletRequest request) {
+    public ResponseEntity<GenericErrorResponse> handleMissingCookieException(MissingCookieException ex, HttpServletRequest request) {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), ex.getMessage());
         log.info("Missing cookie on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<GenericErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex, HttpServletRequest request) {
+        var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), ex.getMessage());
+        log.info("Forbidden access on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -39,27 +47,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<GenericErrorResponse> handleGenericException(DataIntegrityViolationException ex, HttpServletRequest request) {
+    public ResponseEntity<GenericErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), "Invalid argument provided");
         log.error("Error DataIntegrityViolationException on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<GenericErrorResponse> handleGenericException(NoResourceFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<GenericErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), "Resource not found");
         log.info("Error NoResourceFoundException on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<GenericErrorResponse> handleGenericException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+    public ResponseEntity<GenericErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), "Resource not found");
         log.info("Error HttpRequestMethodNotSupportedException on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-
-
 
 
 }

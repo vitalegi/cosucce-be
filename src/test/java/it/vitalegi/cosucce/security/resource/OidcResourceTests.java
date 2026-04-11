@@ -44,6 +44,18 @@ public class OidcResourceTests {
     @Autowired
     ObjectMapper objectMapper;
 
+    CognitoOidcResponse cognitoOidcResponse() {
+        return CognitoOidcResponse.builder().accessToken("at").idToken("it").tokenType("tt").expiresIn(1000).refreshToken("rt").build();
+    }
+
+    protected <E> E payload(MockHttpServletResponse response, Class<E> clazz) {
+        try {
+            return objectMapper.readValue(response.getContentAsString(), clazz);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Nested
     class Token {
         @Test
@@ -128,20 +140,7 @@ public class OidcResourceTests {
             mockMvc.perform(get("/oidc/logout").cookie(new Cookie("refresh_token", "rt"))) //
                     .andExpect(status().isOk()) //
                     .andExpect(cookie().exists("refresh_token")) //
-                    .andExpect(cookie().maxAge("refresh_token", -1)) //
-                    .andReturn();
-        }
-    }
-
-    CognitoOidcResponse cognitoOidcResponse() {
-        return CognitoOidcResponse.builder().accessToken("at").idToken("it").tokenType("tt").expiresIn(1000).refreshToken("rt").build();
-    }
-
-    protected <E> E payload(MockHttpServletResponse response, Class<E> clazz) {
-        try {
-            return objectMapper.readValue(response.getContentAsString(), clazz);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+                    .andExpect(cookie().maxAge("refresh_token", -1));
         }
     }
 

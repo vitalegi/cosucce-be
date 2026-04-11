@@ -2,6 +2,7 @@ package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.UserDataUtil;
 import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
+import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD;
@@ -19,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("test")
-public class BudgetBoardServiceBoardTests {
+public class BudgetBoardServiceTests {
 
     @Autowired
     DSLContext dsl;
@@ -141,4 +144,44 @@ public class BudgetBoardServiceBoardTests {
             assertNotNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id2)).fetchOne());
         }
     }
+
+    @Nested
+    class GetBoardsVisibleByUser {
+        @Test
+        void given_hasBoard_then_dataIsRetrieved() {
+            var userId1 = userDataUtil.user();
+            var id = budgetBoardService.addBoard("Test1", userId1);
+
+            var actual = budgetBoardService.getBoardsVisibleByUser(userId1);
+            assertEquals(1, actual.size());
+            var board = actual.get(0);
+            assertEquals("Test1", board.getName());
+            assertEquals(id, board.getBoardId());
+            assertNotNull(board.getCreationDate());
+            assertNotNull(board.getLastUpdate());
+
+            assertEquals(1, board.getUsers().size());
+            var user = board.getUsers().get(0);
+            assertEquals(userId1, user.getUserId());
+            assertEquals(BudgetBoardRole.OWNER, user.getRole());
+            assertNotNull(user.getCreationDate());
+            assertNotNull(user.getLastUpdate());
+        }
+        
+        @Test
+        void visibilityRules() {
+            var userId1 = userDataUtil.user();
+            var userId2 = userDataUtil.user();
+            var userId3 = userDataUtil.user();
+
+            budgetBoardService.addBoard("Test1", userId1);
+            budgetBoardService.addBoard("Test2", userId1);
+            budgetBoardService.addBoard("Test3", userId2);
+
+            assertEquals(List.of("Test1", "Test2"), budgetBoardService.getBoardsVisibleByUser(userId1).stream().map(BudgetBoard::getName).sorted().toList());
+            assertEquals(List.of("Test3"), budgetBoardService.getBoardsVisibleByUser(userId2).stream().map(BudgetBoard::getName).toList());
+            assertTrue(budgetBoardService.getBoardsVisibleByUser(userId3).isEmpty());
+        }
+    }
+
 }

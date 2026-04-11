@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD;
@@ -57,6 +58,18 @@ public class BudgetBoardRepository {
             throw new IllegalArgumentException("Board " + boardId + " not found");
         }
         return map.entrySet().iterator().next();
+    }
+
+    public Set<Map.Entry<BudgetBoardRecord, Result<BudgetBoardUserRecord>>> getEntitiesByUserId(UUID userId) {
+        var results = dsl //
+                .select(BUDGET_BOARD.fields()) //
+                .select(BUDGET_BOARD_USER.fields()) //
+                .from(BUDGET_BOARD) //
+                .leftJoin(BUDGET_BOARD_USER) //
+                .on(BUDGET_BOARD_USER.BOARD_ID.eq(BUDGET_BOARD.BOARD_ID)) //
+                .where(BUDGET_BOARD_USER.USER_ID.eq(userId)) //
+                .fetch();
+        return results.intoGroups(BUDGET_BOARD, BUDGET_BOARD_USER).entrySet();
     }
 
     public void deleteEntityById(UUID boardId) {

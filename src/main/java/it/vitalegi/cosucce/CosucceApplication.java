@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class CosucceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CosucceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CosucceApplication.class, args);
+    }
 
 }

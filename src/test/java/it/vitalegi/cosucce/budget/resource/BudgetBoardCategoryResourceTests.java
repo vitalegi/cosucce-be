@@ -44,16 +44,14 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         void when_notAuthenticated_then_401() throws Exception {
             mockMvc.perform(request()) //
                     .andExpect(status().is(401)) //
-                    .andExpect(content().string("")) //
-                    .andReturn();
+                    .andExpect(content().string(""));
         }
 
         @Test
         void when_notPartOfTheBoard_then_403() throws Exception {
             mockMvc.perform(request().with(MockAuth.member())) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         MockHttpServletRequestBuilder request() {
@@ -80,16 +78,14 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         void when_notAuthenticated_then_401() throws Exception {
             mockMvc.perform(request()) //
                     .andExpect(status().is(401)) //
-                    .andExpect(content().string("")) //
-                    .andReturn();
+                    .andExpect(content().string(""));
         }
 
         @Test
         void when_notPartOfTheBoard_then_403() throws Exception {
             mockMvc.perform(request().with(MockAuth.member())) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         MockHttpServletRequestBuilder request() {
@@ -120,24 +116,21 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         void when_notAuthenticated_then_401() throws Exception {
             mockMvc.perform(request(boardId)) //
                     .andExpect(status().is(401)) //
-                    .andExpect(content().string("")) //
-                    .andReturn();
+                    .andExpect(content().string(""));
         }
 
         @Test
         void when_notPartOfTheBoard_then_403() throws Exception {
             mockMvc.perform(request(boardId).with(MockAuth.member())) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         @Test
         void when_unknownBoard_then_403() throws Exception {
             mockMvc.perform(request(UUID.randomUUID()).with(MockAuth.member())) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         MockHttpServletRequestBuilder request(UUID boardId) {
@@ -161,24 +154,21 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         void when_notAuthenticated_then_401() throws Exception {
             mockMvc.perform(request(boardId, UUID.randomUUID())) //
                     .andExpect(status().is(401)) //
-                    .andExpect(content().string("")) //
-                    .andReturn();
+                    .andExpect(content().string(""));
         }
 
         @Test
         void when_notPartOfTheBoard_then_403() throws Exception {
             mockMvc.perform(request(boardId, UUID.randomUUID()).with(MockAuth.member())) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         @Test
         void when_memberOfTheBoardWithoutPermission_then_403() throws Exception {
             mockMvc.perform(request(boardId, UUID.randomUUID()).with(boardMember)) //
                     .andExpect(status().is(403)) //
-                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName())) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.error").value(UnauthorizedBoardAccessException.class.getSimpleName()));
         }
 
         MockHttpServletRequestBuilder request(UUID boardId, UUID categoryId) {

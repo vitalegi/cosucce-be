@@ -37,16 +37,14 @@ public class AuthenticationResourceTests {
                     .andExpect(jsonPath("$.userId").isString()) //
                     .andExpect(jsonPath("$.issuer").value(MockAuth.ISSUER)) //
                     .andExpect(jsonPath("$.subject").value("user1")) //
-                    .andExpect(jsonPath("$.permissions", hasItem(Permission.BUDGET_VIEW.name()))) //
-                    .andReturn();
+                    .andExpect(jsonPath("$.permissions", hasItem(Permission.BUDGET_VIEW.name())));
         }
 
         @Test
         void when_notAuthenticated_then_401() throws Exception {
             mockMvc.perform(get("/auth/identity").contentType(MediaType.APPLICATION_JSON)) //
                     .andExpect(status().is(401)) //
-                    .andExpect(content().string("")) //
-                    .andReturn();
+                    .andExpect(content().string(""));
         }
     }
 }

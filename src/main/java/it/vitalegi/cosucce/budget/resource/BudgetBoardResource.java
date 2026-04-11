@@ -62,6 +62,12 @@ public class BudgetBoardResource {
         return budgetBoardService.getBoard(boardId);
     }
 
+    @GetMapping
+    public List<BudgetBoard> getBoards() {
+        authenticationService.checkPermission(Permission.BUDGET_VIEW);
+        return budgetBoardService.getBoardsVisibleByUser(userId());
+    }
+
     @DeleteMapping("/{boardId}")
     public void deleteBoard(@PathVariable("boardId") UUID boardId) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
