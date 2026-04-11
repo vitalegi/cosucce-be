@@ -66,7 +66,7 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "aaa");
             mockMvc.perform(request(accountId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
@@ -94,8 +94,9 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
         }
 
         MockHttpServletRequestBuilder request(UUID accountId) {
-            return put("/budget/board/" + boardId + "/account/" + accountId) //
-                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().label("xxx").icon("xxx").enabled(true).etag("xxx").build())) //
+            return put("/budget/board/" + boardId + "/account") //
+                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().accountId( accountId).label("xxx").icon("xxx").enabled(true).etag("bbb").build())) //
+                    .header("x-etag", "aaa") //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }

@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce.budget.service;
 
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoardAccount;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardAccountRepository;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardAccountRecord;
@@ -7,6 +8,7 @@ import it.vitalegi.cosucce.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,10 +37,11 @@ public class BudgetBoardAccountService {
         }
 
         budgetBoardAccountRepository.addEntity(accountId, boardId, label, icon, enabled, etag);
-        log.info("Added Account {} on board {}: {}", accountId, boardId, label);
+        log.info("Added Account {} on board {}. Etag: {}", accountId, boardId, etag);
     }
 
-    public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    @Transactional
+    public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String newEtag, String oldEtag) {
         if (accountId == null) {
             throw new IllegalArgumentException("AccountId is missing");
         }
@@ -51,11 +54,18 @@ public class BudgetBoardAccountService {
         if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (StringUtil.isNullOrEmpty(etag)) {
-            throw new IllegalArgumentException("ETag is missing");
+        if (StringUtil.isNullOrEmpty(newEtag)) {
+            throw new IllegalArgumentException("New ETag is missing");
         }
-        budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, enabled, etag);
-        log.info("Updated Account {} on board {}: {}", accountId, boardId, label);
+        if (StringUtil.isNullOrEmpty(oldEtag)) {
+            throw new IllegalArgumentException("Old ETag is missing");
+        }
+        var existing = budgetBoardAccountRepository.getEntityById(accountId);
+        if (!existing.getEtag().equals(oldEtag)) {
+            throw new ETagNotMatchedException(existing.getEtag(), oldEtag, accountId, "BudgetAccount");
+        }
+        budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, enabled, newEtag);
+        log.info("Updated Account {} on board {}. ETag: {} => {}", accountId, boardId, oldEtag, newEtag);
     }
 
     public List<BudgetBoardAccount> getBoardAccounts(UUID boardId) {

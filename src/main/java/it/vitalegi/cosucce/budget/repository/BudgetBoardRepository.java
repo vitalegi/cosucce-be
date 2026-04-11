@@ -35,15 +35,16 @@ public class BudgetBoardRepository {
         return record.getBoardId();
     }
 
-    public void updateEntity(UUID boardId, String name) {
+    public void updateEntity(UUID boardId, String name, String etag) {
         dsl.update(BUDGET_BOARD) //
                 .set(BUDGET_BOARD.NAME, name) //
+                .set(BUDGET_BOARD.ETAG, etag) //
                 .set(BUDGET_BOARD.LAST_UPDATE, LocalDateTime.now()) //
                 .where(BUDGET_BOARD.BOARD_ID.eq(boardId)) //
                 .execute();
     }
 
-    public Map.Entry<BudgetBoardRecord, Result<BudgetBoardUserRecord>> getEntityById(UUID boardId) {
+    public Map.Entry<BudgetBoardRecord, Result<BudgetBoardUserRecord>> getEntityWithUsersByBoardId(UUID boardId) {
         var results = dsl //
                 .select(BUDGET_BOARD.fields()) //
                 .select(BUDGET_BOARD_USER.fields()) //
@@ -76,5 +77,12 @@ public class BudgetBoardRepository {
         dsl.deleteFrom(BUDGET_BOARD) //
                 .where(BUDGET_BOARD.BOARD_ID.eq(boardId)) //
                 .execute();
+    }
+
+    public BudgetBoardRecord getEntityById(UUID boardId) {
+        return dsl //
+                .selectFrom(BUDGET_BOARD) //
+                .where(BUDGET_BOARD.BOARD_ID.eq(boardId)) //
+                .fetchOne();
     }
 }

@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BudgetBoardAddResponse {
+@Builder
+public class BudgetBoardAddOrUpdateRequest {
     UUID boardId;
+    String name;
+    String etag;
 }

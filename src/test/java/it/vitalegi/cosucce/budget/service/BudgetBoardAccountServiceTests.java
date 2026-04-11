@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.UserDataUtil;
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoardAccount;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -136,7 +137,7 @@ public class BudgetBoardAccountServiceTests {
             var accountId = UUID.randomUUID();
             budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
 
-            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "1", "2", false, "3");
+            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "1", "2", false, "3", "ccc");
 
             var actual = budgetBoardAccountService.getBoardAccounts(boardId).get(0);
             assertEquals(accountId, actual.getAccountId());
@@ -150,6 +151,21 @@ public class BudgetBoardAccountServiceTests {
         }
 
         @Test
+        void given_invalidEtag_then_fails() {
+            var userId = userDataUtil.user();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
+            var accountId = UUID.randomUUID();
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "etag");
+
+            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardAccountService.updateBoardAccount(accountId, boardId, "aaa", "bbb", true, "yyy", "xxx"));
+            assertEquals("etag", e.getExpectedEtag());
+            assertEquals("xxx", e.getActualETag());
+            assertEquals(accountId, e.getEntityId());
+            assertEquals("BudgetAccount", e.getEntityClass());
+        }
+
+        @Test
         void given_multipleEntries_then_correctDataIsUpdated() {
             var userId = userDataUtil.user();
             var boardId = UUID.randomUUID();
@@ -159,7 +175,7 @@ public class BudgetBoardAccountServiceTests {
             budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa1", "bbb", true, "ccc");
             budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId, "aaa2", "bbb", true, "ccc");
 
-            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "xxx", "2", false, "3");
+            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "xxx", "2", false, "3", "ccc");
 
             assertEquals(List.of("aaa2", "xxx"), budgetBoardAccountService.getBoardAccounts(boardId).stream().map(BudgetBoardAccount::getLabel).sorted().toList());
         }

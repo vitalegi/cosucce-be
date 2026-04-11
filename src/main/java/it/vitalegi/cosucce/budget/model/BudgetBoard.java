@@ -11,6 +11,7 @@ public class BudgetBoard {
     private UUID boardId;
     private String name;
     private List<BudgetBoardUser> users;
+    private String etag;
     private LocalDateTime creationDate;
     private LocalDateTime lastUpdate;
 }

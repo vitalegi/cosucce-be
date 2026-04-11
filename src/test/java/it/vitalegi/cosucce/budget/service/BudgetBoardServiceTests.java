@@ -2,6 +2,7 @@ package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.UserDataUtil;
 import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -109,15 +110,28 @@ public class BudgetBoardServiceTests {
         void given_validData_then_boardIsUpdated() {
             var userId = userDataUtil.user();
             var boardId = UUID.randomUUID();
-            budgetBoardService.addBoard(boardId, "Test", "etag", userId);
+            budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
 
-            budgetBoardService.updateBoard(boardId, "Test2");
+            budgetBoardService.updateBoard(boardId, "Test2", "etag2", "etag1");
 
             var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId)).fetchOne();
             assertNotNull(board);
             assertEquals("Test2", board.getName());
             assertNotNull(board.getCreationDate());
             assertNotNull(board.getLastUpdate());
+        }
+
+        @Test
+        void given_invalidEtag_then_fails() {
+            var userId = userDataUtil.user();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
+
+            var e = assertThrows(ETagNotMatchedException.class, () ->budgetBoardService.updateBoard(boardId, "Test2", "etag2", "xxx"));
+            assertEquals("etag1", e.getExpectedEtag());
+            assertEquals("xxx", e.getActualETag());
+            assertEquals(boardId, e.getEntityId());
+            assertEquals("BudgetBoard", e.getEntityClass());
         }
 
         @Test
@@ -128,7 +142,7 @@ public class BudgetBoardServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test2", "etag", userId);
 
-            budgetBoardService.updateBoard(boardId1, "xxx");
+            budgetBoardService.updateBoard(boardId1, "xxx", "etag2", "etag");
 
             var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId2)).fetchOne();
             assertEquals("Test2", board.getName());

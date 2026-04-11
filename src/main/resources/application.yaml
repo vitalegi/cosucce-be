@@ -55,7 +55,7 @@ security:
     allowedOrigins: http://localhost:9000
     allowedMethods: GET, POST, PUT, DELETE
     allowCredentials: true
-    allowedHeaders: Content-Type, Access-Control-Request-Method, Access-Control-Allow-Credentials, Access-Control-Allow-Origin, Access-Control-Allow-Headers, x-requested-with, Authorization, origin, accept
+    allowedHeaders: x-etag, Content-Type, Access-Control-Request-Method, Access-Control-Allow-Credentials, Access-Control-Allow-Origin, Access-Control-Allow-Headers, x-requested-with, Authorization, origin, accept
   rbac:
     ADMIN: BUDGET_VIEW
     MEMBER: BUDGET_VIEW

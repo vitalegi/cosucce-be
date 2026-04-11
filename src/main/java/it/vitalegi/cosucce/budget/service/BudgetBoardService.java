@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import it.vitalegi.cosucce.budget.model.BudgetBoardUser;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;
@@ -41,16 +42,30 @@ public class BudgetBoardService {
         }
         budgetBoardRepository.addEntity(boardId, name, etag);
         budgetBoardUserRepository.addEntity(boardId, userId, BudgetBoardRole.OWNER);
-        log.info("Added board {}: {}", boardId, name);
+        log.info("Added board {}: {}. Etag: {}", boardId, name, etag);
     }
 
-    public void updateBoard(UUID boardId, String name) {
-        budgetBoardRepository.updateEntity(boardId, name);
-        log.info("Updated board {}: {}", boardId, name);
+    public void updateBoard(UUID boardId, String name, String newEtag, String oldEtag) {
+        if (StringUtil.isNullOrEmpty(name)) {
+            throw new IllegalArgumentException("Name is missing");
+        }
+        if (StringUtil.isNullOrEmpty(newEtag)) {
+            throw new IllegalArgumentException("New ETag is missing");
+        }
+        if (StringUtil.isNullOrEmpty(oldEtag)) {
+            throw new IllegalArgumentException("Old ETag is missing");
+        }
+
+        var existing = budgetBoardRepository.getEntityById(boardId);
+        if (!existing.getEtag().equals(oldEtag)) {
+            throw new ETagNotMatchedException(existing.getEtag(), oldEtag, boardId, "BudgetBoard");
+        }
+        budgetBoardRepository.updateEntity(boardId, name, newEtag);
+        log.info("Updated Board {}. ETag: {} => {}", boardId, oldEtag, newEtag);
     }
 
     public BudgetBoard getBoard(UUID boardId) {
-        var record = budgetBoardRepository.getEntityById(boardId);
+        var record = budgetBoardRepository.getEntityWithUsersByBoardId(boardId);
         return mapBudgetBoard(record.getKey(), record.getValue());
     }
 
@@ -74,6 +89,7 @@ public class BudgetBoardService {
         var out = new BudgetBoard();
         out.setBoardId(budgetBoardRecord.getBoardId());
         out.setName(budgetBoardRecord.getName());
+        out.setEtag(budgetBoardRecord.getEtag());
         out.setCreationDate(budgetBoardRecord.getCreationDate());
         out.setLastUpdate(budgetBoardRecord.getLastUpdate());
         if (budgetBoardUserRecords != null) {

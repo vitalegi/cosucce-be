@@ -50,4 +50,11 @@ public class BudgetBoardCategoryRepository {
                 .where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId)) //
                 .execute();
     }
+
+    public BudgetBoardCategoryRecord getEntityById(UUID categoryId) {
+        return dsl //
+                .selectFrom(BUDGET_BOARD_CATEGORY) //
+                .where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId)) //
+                .fetchOne();
+    }
 }

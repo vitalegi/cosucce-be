@@ -48,7 +48,7 @@ public class AbstractBudgetResourceTests {
         boardOwnerId = userDataUtil.user(subject, List.of("MEMBER"));
         boardOwner = MockAuth.member(subject);
         boardId = UUID.randomUUID();
-        budgetBoardService.addBoard(boardId, "SAMPLE", "etag", boardOwnerId);
+        budgetBoardService.addBoard(boardId, "SAMPLE", "aaa", boardOwnerId);
 
         subject = UUID.randomUUID().toString();
         boardMemberId = userDataUtil.user(subject, List.of("MEMBER"));

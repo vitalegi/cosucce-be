@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.UserDataUtil;
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -134,7 +135,7 @@ public class BudgetBoardCategoryServiceTests {
             var categoryId = UUID.randomUUID();
             budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
 
-            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "1", "2", false, "3");
+            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "1", "2", false, "3", "ccc");
 
             var actual = budgetBoardCategoryService.getBoardCategories(boardId).get(0);
             assertEquals(categoryId, actual.getCategoryId());
@@ -148,6 +149,21 @@ public class BudgetBoardCategoryServiceTests {
         }
 
         @Test
+        void given_invalidEtag_then_fails() {
+            var userId = userDataUtil.user();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
+            var categoryId = UUID.randomUUID();
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "etag");
+
+            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "aaa", "bbb", true, "yyy", "xxx"));
+            assertEquals("etag", e.getExpectedEtag());
+            assertEquals("xxx", e.getActualETag());
+            assertEquals(categoryId, e.getEntityId());
+            assertEquals("BudgetCategory", e.getEntityClass());
+        }
+
+        @Test
         void given_multipleEntries_then_correctDataIsUpdated() {
             var userId = userDataUtil.user();
             var boardId = UUID.randomUUID();
@@ -156,7 +172,7 @@ public class BudgetBoardCategoryServiceTests {
             budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa1", "bbb", true, "ccc");
             budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId, "aaa2", "bbb", true, "ccc");
 
-            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "xxx", "2", false, "3");
+            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "xxx", "2", false, "3", "ccc");
 
             assertEquals(List.of("aaa2", "xxx"), budgetBoardCategoryService.getBoardCategories(boardId).stream().map(BudgetBoardCategory::getLabel).sorted().toList());
         }

@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce.budget.service;
 
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardCategoryRecord;
@@ -34,10 +35,10 @@ public class BudgetBoardCategoryService {
             throw new IllegalArgumentException("ETag is missing");
         }
         budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, icon, enabled, etag);
-        log.info("Added Category {} on board {}: {}", categoryId, boardId, label);
+        log.info("Added Category {} on board {}. Etag: {}", categoryId, boardId, etag);
     }
 
-    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String newEtag, String oldEtag) {
         if (categoryId == null) {
             throw new IllegalArgumentException("CategoryId is missing");
         }
@@ -50,11 +51,18 @@ public class BudgetBoardCategoryService {
         if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (StringUtil.isNullOrEmpty(etag)) {
-            throw new IllegalArgumentException("ETag is missing");
+        if (StringUtil.isNullOrEmpty(newEtag)) {
+            throw new IllegalArgumentException("New ETag is missing");
         }
-        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, enabled, etag);
-        log.info("Updated Category {} on board {}: {}", categoryId, boardId, label);
+        if (StringUtil.isNullOrEmpty(oldEtag)) {
+            throw new IllegalArgumentException("Old ETag is missing");
+        }
+        var existing = budgetBoardCategoryRepository.getEntityById(categoryId);
+        if (!existing.getEtag().equals(oldEtag)) {
+            throw new ETagNotMatchedException(existing.getEtag(), oldEtag, categoryId, "BudgetCategory");
+        }
+        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, enabled, newEtag);
+        log.info("Updated Category {} on board {}. ETag: {} => {}", categoryId, boardId, oldEtag, newEtag);
     }
 
     public List<BudgetBoardCategory> getBoardCategories(UUID boardId) {

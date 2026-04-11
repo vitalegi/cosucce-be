@@ -2,7 +2,7 @@ package it.vitalegi.cosucce.budget.resource;
 
 import it.vitalegi.cosucce.MockAuth;
 import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
-import it.vitalegi.cosucce.budget.dto.BudgetBoardAddRequest;
+import it.vitalegi.cosucce.budget.dto.BudgetBoardAddOrUpdateRequest;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardUpdateRequest;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import it.vitalegi.cosucce.security.exception.UnauthorizedAccessException;
@@ -55,7 +55,7 @@ public class BudgetBoardResourceTests extends AbstractBudgetResourceTests {
 
         MockHttpServletRequestBuilder request() {
             return post("/budget/board") //
-                    .content(asString(BudgetBoardAddRequest.builder().boardId(UUID.randomUUID()).name("SAMPLE").etag("etag").build())) //
+                    .content(asString(BudgetBoardAddOrUpdateRequest.builder().boardId(UUID.randomUUID()).name("SAMPLE").etag("aaa").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -91,8 +91,9 @@ public class BudgetBoardResourceTests extends AbstractBudgetResourceTests {
         }
 
         MockHttpServletRequestBuilder request() {
-            return put("/budget/board/" + boardId) //
-                    .content(asString(BudgetBoardUpdateRequest.builder().name("SAMPLE2").build())) //
+            return put("/budget/board") //
+                    .content(asString(BudgetBoardAddOrUpdateRequest.builder().boardId(boardId).name("SAMPLE2").etag("bbb").build())) //
+                    .header("x-etag", "aaa") //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
