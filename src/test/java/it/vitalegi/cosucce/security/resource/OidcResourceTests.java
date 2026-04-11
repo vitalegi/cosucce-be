@@ -108,14 +108,14 @@ public class OidcResourceTests {
         void given_requestWithInvalidRefreshToken_then_error() throws Exception {
             when(cognitoService.refresh("rt")).thenThrow(new RuntimeException("Invalid token"));
             mockMvc.perform(post("/oidc/refresh").contentType(MediaType.APPLICATION_JSON).cookie(new Cookie("refresh_token", "rt"))) //
-                    .andExpect(status().is(500)) //
+                    .andExpect(status().is(403)) //
                     .andExpect(cookie().doesNotExist("refresh_token"));
         }
 
         @Test
         void given_requestWithoutRefreshToken_then_error() throws Exception {
             mockMvc.perform(post("/oidc/refresh").contentType(MediaType.APPLICATION_JSON)) //
-                    .andExpect(status().is(500)) //
+                    .andExpect(status().is(403)) //
                     .andExpect(cookie().doesNotExist("refresh_token"));
             verify(cognitoService, times(0)).refresh(any());
         }

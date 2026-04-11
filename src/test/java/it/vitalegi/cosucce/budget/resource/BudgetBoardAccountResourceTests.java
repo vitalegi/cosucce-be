@@ -1,7 +1,7 @@
 package it.vitalegi.cosucce.budget.resource;
 
 import it.vitalegi.cosucce.MockAuth;
-import it.vitalegi.cosucce.budget.dto.BudgetBoardCategoryAddOrUpdateRequest;
+import it.vitalegi.cosucce.budget.dto.BudgetBoardAccountAddOrUpdateRequest;
 import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Slf4j
 @ActiveProfiles("test")
-public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTests {
+public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests {
 
     @Nested
     class Add {
@@ -37,7 +37,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         void when_authenticated_then_responseContainsData() throws Exception {
             mockMvc.perform(request().with(boardMember)) //
                     .andExpect(status().isOk()) //
-                    .andExpect(jsonPath("$.categoryId").isString());
+                    .andExpect(jsonPath("$.accountId").isString());
         }
 
         @Test
@@ -57,8 +57,8 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         }
 
         MockHttpServletRequestBuilder request() {
-            return post("/budget/board/" + boardId + "/category") //
-                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().label("aaa").icon("bbb").enabled(true).etag("ccc").build())) //
+            return post("/budget/board/" + boardId + "/account") //
+                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().label("aaa").icon("bbb").enabled(true).etag("ccc").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -67,12 +67,12 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
     class Update {
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
-            var categoryId = budgetBoardCategoryService.addBoardCategory(boardId, "aaa", "bbb", true, "ccc");
-            mockMvc.perform(request(categoryId).with(boardMember)) //
+            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
+            mockMvc.perform(request(accountId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
-            var actual = budgetBoardCategoryService.getBoardCategories(boardId).get(0);
-            assertEquals(categoryId, actual.getCategoryId());
+            var actual = budgetBoardAccountService.getBoardAccounts(boardId).get(0);
+            assertEquals(accountId, actual.getAccountId());
             assertEquals("xxx", actual.getLabel());
         }
 
@@ -96,9 +96,9 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
             return request(UUID.randomUUID());
         }
 
-        MockHttpServletRequestBuilder request(UUID categoryId) {
-            return put("/budget/board/" + boardId + "/category/" + categoryId) //
-                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().label("xxx").icon("xxx").enabled(true).etag("xxx").build())) //
+        MockHttpServletRequestBuilder request(UUID accountId) {
+            return put("/budget/board/" + boardId + "/account/" + accountId) //
+                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().label("xxx").icon("xxx").enabled(true).etag("xxx").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -107,11 +107,11 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
     class GetById {
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
-            var categoryId = budgetBoardCategoryService.addBoardCategory(boardId, "aaa", "bbb", true, "ccc");
+            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
             mockMvc.perform(request(boardId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(jsonPath("$[0].boardId").value(boardId.toString())) //
-                    .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString())) //
+                    .andExpect(jsonPath("$[0].accountId").value(accountId.toString())) //
                     .andExpect(jsonPath("$[0].creationDate").exists()) //
                     .andExpect(jsonPath("$[0].lastUpdate").exists());
         }
@@ -141,7 +141,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         }
 
         MockHttpServletRequestBuilder request(UUID boardId) {
-            return get("/budget/board/" + boardId + "/category") //
+            return get("/budget/board/" + boardId + "/account") //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -150,11 +150,11 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
     class Delete {
         @Test
         void when_authenticated_then_ok() throws Exception {
-            var categoryId = budgetBoardCategoryService.addBoardCategory(boardId, "aaa", "bbb", true, "ccc");
-            mockMvc.perform(request(boardId, categoryId).with(boardOwner)) //
+            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
+            mockMvc.perform(request(boardId, accountId).with(boardOwner)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
-            assertTrue(budgetBoardCategoryService.getBoardCategories(boardId).isEmpty());
+            assertTrue(budgetBoardAccountService.getBoardAccounts(boardId).isEmpty());
         }
 
         @Test
@@ -181,8 +181,8 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
                     .andReturn();
         }
 
-        MockHttpServletRequestBuilder request(UUID boardId, UUID categoryId) {
-            return delete("/budget/board/" + boardId + "/category/" + categoryId) //
+        MockHttpServletRequestBuilder request(UUID boardId, UUID accountId) {
+            return delete("/budget/board/" + boardId + "/account/" + accountId) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }

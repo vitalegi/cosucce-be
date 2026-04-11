@@ -45,7 +45,11 @@ public class OidcResource {
         if (StringUtil.isNullOrEmpty(refreshToken)) {
             throw new MissingCookieException("Missing cookie refresh_token");
         }
-        return oidcService.refresh(refreshToken);
+        try {
+            return oidcService.refresh(refreshToken);
+        } catch (Exception e) {
+            throw new MissingCookieException("Invalid cookie refresh_token: " + e.getMessage());
+        }
     }
 
     protected ResponseCookie cookie(String name, String value) {

@@ -4,6 +4,8 @@ import it.vitalegi.cosucce.MockAuth;
 import it.vitalegi.cosucce.UserDataUtil;
 import it.vitalegi.cosucce.budget.constant.BudgetBoardRole;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardUserRepository;
+import it.vitalegi.cosucce.budget.service.BudgetBoardAccountService;
+import it.vitalegi.cosucce.budget.service.BudgetBoardCategoryService;
 import it.vitalegi.cosucce.budget.service.BudgetBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,10 @@ public class AbstractBudgetResourceTests {
     BudgetBoardUserRepository budgetBoardUserRepository;
     @Autowired
     BudgetBoardService budgetBoardService;
+    @Autowired
+    BudgetBoardAccountService budgetBoardAccountService;
+    @Autowired
+    BudgetBoardCategoryService budgetBoardCategoryService;
     @Autowired
     UserDataUtil userDataUtil;
     @Autowired
