@@ -43,7 +43,7 @@ public class BudgetBoardResourceTests extends AbstractBudgetResourceTests {
             var auth = MockAuth.member("user1");
             mockMvc.perform(request().with(auth)) //
                     .andExpect(status().isOk()) //
-                    .andExpect(jsonPath("$.boardId").isString());
+                    .andExpect(content().string(""));
         }
 
         @Test
@@ -55,7 +55,7 @@ public class BudgetBoardResourceTests extends AbstractBudgetResourceTests {
 
         MockHttpServletRequestBuilder request() {
             return post("/budget/board") //
-                    .content(asString(BudgetBoardAddRequest.builder().name("SAMPLE").build())) //
+                    .content(asString(BudgetBoardAddRequest.builder().boardId(UUID.randomUUID()).name("SAMPLE").etag("etag").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }

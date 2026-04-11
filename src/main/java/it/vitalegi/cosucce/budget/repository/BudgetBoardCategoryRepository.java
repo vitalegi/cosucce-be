@@ -16,10 +16,9 @@ import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_CATEGORY;
 public class BudgetBoardCategoryRepository {
     final DSLContext dsl;
 
-    public UUID addEntity(UUID boardId, String label, String icon, boolean enabled, String etag) {
-        var id = UUID.randomUUID();
+    public void addEntity(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
         var record = dsl.newRecord(BUDGET_BOARD_CATEGORY);
-        record.set(BUDGET_BOARD_CATEGORY.CATEGORY_ID, id);
+        record.set(BUDGET_BOARD_CATEGORY.CATEGORY_ID, categoryId);
         record.set(BUDGET_BOARD_CATEGORY.BOARD_ID, boardId);
         record.set(BUDGET_BOARD_CATEGORY.LABEL, label);
         record.set(BUDGET_BOARD_CATEGORY.ICON, icon);
@@ -28,7 +27,6 @@ public class BudgetBoardCategoryRepository {
         record.set(BUDGET_BOARD_CATEGORY.CREATION_DATE, LocalDateTime.now());
         record.set(BUDGET_BOARD_CATEGORY.LAST_UPDATE, LocalDateTime.now());
         record.store();
-        return id;
     }
 
     public void updateEntity(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {

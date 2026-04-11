@@ -8,6 +8,7 @@ import it.vitalegi.cosucce.budget.repository.BudgetBoardRepository;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardUserRepository;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardRecord;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardUserRecord;
+import it.vitalegi.cosucce.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,22 @@ public class BudgetBoardService {
     final BudgetBoardCategoryRepository budgetBoardCategoryRepository;
 
     @Transactional
-    public UUID addBoard(String name, UUID userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("UserId is null");
+    public void addBoard(UUID boardId, String name, String etag, UUID userId) {
+        if (boardId == null) {
+            throw new IllegalArgumentException("BoardId is missing");
         }
-        var boardId = budgetBoardRepository.addEntity(name);
+        if (StringUtil.isNullOrEmpty(name)) {
+            throw new IllegalArgumentException("Name is missing");
+        }
+        if (StringUtil.isNullOrEmpty(etag)) {
+            throw new IllegalArgumentException("ETag is missing");
+        }
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId is missing");
+        }
+        budgetBoardRepository.addEntity(boardId, name, etag);
         budgetBoardUserRepository.addEntity(boardId, userId, BudgetBoardRole.OWNER);
         log.info("Added board {}: {}", boardId, name);
-        return boardId;
     }
 
     public void updateBoard(UUID boardId, String name) {

@@ -40,6 +40,9 @@
             <column name="name" type="varchar(500)">
                 <constraints nullable="false"/>
             </column>
+            <column name="etag" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="creation_date" type="datetime">
                 <constraints nullable="true"/>
             </column>

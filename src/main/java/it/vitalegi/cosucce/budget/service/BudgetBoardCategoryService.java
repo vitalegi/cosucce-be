@@ -3,6 +3,7 @@ package it.vitalegi.cosucce.budget.service;
 import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardCategoryRecord;
+import it.vitalegi.cosucce.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,23 +17,24 @@ import java.util.UUID;
 public class BudgetBoardCategoryService {
     final BudgetBoardCategoryRepository budgetBoardCategoryRepository;
 
-    public UUID addBoardCategory(UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void addBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+        if (categoryId == null) {
+            throw new IllegalArgumentException("CategoryId is missing");
+        }
         if (boardId == null) {
             throw new IllegalArgumentException("BoardId is missing");
         }
-        if (label == null) {
+        if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
         }
-        if (icon == null) {
+        if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (etag == null) {
+        if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
-
-        var id = budgetBoardCategoryRepository.addEntity(boardId, label, icon, enabled, etag);
-        log.info("Added Category {} on board {}: {}", id, boardId, label);
-        return id;
+        budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, icon, enabled, etag);
+        log.info("Added Category {} on board {}: {}", categoryId, boardId, label);
     }
 
     public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
@@ -42,13 +44,13 @@ public class BudgetBoardCategoryService {
         if (boardId == null) {
             throw new IllegalArgumentException("BoardId is missing");
         }
-        if (label == null) {
+        if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
         }
-        if (icon == null) {
+        if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (etag == null) {
+        if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
         budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, enabled, etag);

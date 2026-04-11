@@ -40,14 +40,15 @@ public class BudgetBoardServiceTests {
         @Test
         void given_validData_then_entityIsInitialized() {
             var userId = userDataUtil.user();
-            var id = budgetBoardService.addBoard("Test", userId);
-            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id)).fetchOne();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag", userId);
+            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId)).fetchOne();
             assertNotNull(board);
             assertEquals("Test", board.getName());
             assertNotNull(board.getCreationDate());
             assertNotNull(board.getLastUpdate());
 
-            var boardUsers = dsl.selectFrom(BUDGET_BOARD_USER).where(BUDGET_BOARD_USER.BOARD_ID.eq(id)).fetch();
+            var boardUsers = dsl.selectFrom(BUDGET_BOARD_USER).where(BUDGET_BOARD_USER.BOARD_ID.eq(boardId)).fetch();
             assertEquals(1, boardUsers.size());
             var boardUser = boardUsers.get(0);
             assertEquals(userId, boardUser.getUserId());
@@ -59,13 +60,23 @@ public class BudgetBoardServiceTests {
         @Test
         void given_invalidData_then_exception() {
             var userId = userDataUtil.user();
-            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard(null, userId));
-            assertEquals("Name is null", e.getMessage());
+            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard(null, "xxx", "etag", userId));
+            assertEquals("BoardId is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard("xxx", null));
-            assertEquals("UserId is null", e.getMessage());
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard(UUID.randomUUID(), "", "etag", userId));
+            assertEquals("Name is missing", e.getMessage());
 
-            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardService.addBoard("xxx", UUID.randomUUID()));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard(UUID.randomUUID(), "xxx", "", userId));
+            assertEquals("ETag is missing", e.getMessage());
+
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardService.addBoard(UUID.randomUUID(), "xxx", "etag", null));
+            assertEquals("UserId is missing", e.getMessage());
+
+            var boardId = UUID.randomUUID();
+            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardService.addBoard(boardId, "xxx", "xxx", UUID.randomUUID()));
+
+            budgetBoardService.addBoard(boardId, "xxx", "xxx", userId);
+            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardService.addBoard(boardId, "xxx", "xxx", userId), "Duplicated boardId");
         }
     }
 
@@ -73,18 +84,19 @@ public class BudgetBoardServiceTests {
     class GetBoard {
         @Test
         void given_validData_then_boardIsRetrieved() {
-            var userId1 = userDataUtil.user();
-            var id = budgetBoardService.addBoard("Test1", userId1);
+            var userId = userDataUtil.user();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test1", "etag", userId);
 
-            var actual = budgetBoardService.getBoard(id);
+            var actual = budgetBoardService.getBoard(boardId);
             assertEquals("Test1", actual.getName());
-            assertEquals(id, actual.getBoardId());
+            assertEquals(boardId, actual.getBoardId());
             assertNotNull(actual.getCreationDate());
             assertNotNull(actual.getLastUpdate());
 
             assertEquals(1, actual.getUsers().size());
             var user = actual.getUsers().get(0);
-            assertEquals(userId1, user.getUserId());
+            assertEquals(userId, user.getUserId());
             assertEquals(BudgetBoardRole.OWNER, user.getRole());
             assertNotNull(user.getCreationDate());
             assertNotNull(user.getLastUpdate());
@@ -96,11 +108,12 @@ public class BudgetBoardServiceTests {
         @Test
         void given_validData_then_boardIsUpdated() {
             var userId = userDataUtil.user();
-            var id = budgetBoardService.addBoard("Test", userId);
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag", userId);
 
-            budgetBoardService.updateBoard(id, "Test2");
+            budgetBoardService.updateBoard(boardId, "Test2");
 
-            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id)).fetchOne();
+            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId)).fetchOne();
             assertNotNull(board);
             assertEquals("Test2", board.getName());
             assertNotNull(board.getCreationDate());
@@ -110,12 +123,14 @@ public class BudgetBoardServiceTests {
         @Test
         void given_multipleEntries_then_correctBoardIsUpdated() {
             var userId = userDataUtil.user();
-            var id1 = budgetBoardService.addBoard("Test1", userId);
-            var id2 = budgetBoardService.addBoard("Test2", userId);
+            var boardId1 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId1, "Test1", "etag", userId);
+            var boardId2 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId2, "Test2", "etag", userId);
 
-            budgetBoardService.updateBoard(id1, "xxx");
+            budgetBoardService.updateBoard(boardId1, "xxx");
 
-            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id2)).fetchOne();
+            var board = dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId2)).fetchOne();
             assertEquals("Test2", board.getName());
         }
     }
@@ -125,23 +140,26 @@ public class BudgetBoardServiceTests {
         @Test
         void given_exists_then_entityIsDeleted() {
             var userId = userDataUtil.user();
-            var id = budgetBoardService.addBoard("Test", userId);
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test", "etag", userId);
 
-            budgetBoardService.deleteBoard(id);
+            budgetBoardService.deleteBoard(boardId);
 
-            assertNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id)).fetchOne());
+            assertNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId)).fetchOne());
         }
 
         @Test
         void given_multipleEntities_then_otherEntitiesArePreserved() {
             var userId = userDataUtil.user();
-            var id1 = budgetBoardService.addBoard("Test1", userId);
-            var id2 = budgetBoardService.addBoard("Test2", userId);
+            var boardId1 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId1, "Test", "etag", userId);
+            var boardId2 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
 
-            budgetBoardService.deleteBoard(id1);
+            budgetBoardService.deleteBoard(boardId1);
 
-            assertNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id1)).fetchOne());
-            assertNotNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(id2)).fetchOne());
+            assertNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId1)).fetchOne());
+            assertNotNull(dsl.selectFrom(BUDGET_BOARD).where(BUDGET_BOARD.BOARD_ID.eq(boardId2)).fetchOne());
         }
     }
 
@@ -149,34 +167,38 @@ public class BudgetBoardServiceTests {
     class GetBoardsVisibleByUser {
         @Test
         void given_hasBoard_then_dataIsRetrieved() {
-            var userId1 = userDataUtil.user();
-            var id = budgetBoardService.addBoard("Test1", userId1);
+            var userId = userDataUtil.user();
+            var boardId = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId, "Test1", "etag", userId);
 
-            var actual = budgetBoardService.getBoardsVisibleByUser(userId1);
+            var actual = budgetBoardService.getBoardsVisibleByUser(userId);
             assertEquals(1, actual.size());
             var board = actual.get(0);
             assertEquals("Test1", board.getName());
-            assertEquals(id, board.getBoardId());
+            assertEquals(boardId, board.getBoardId());
             assertNotNull(board.getCreationDate());
             assertNotNull(board.getLastUpdate());
 
             assertEquals(1, board.getUsers().size());
             var user = board.getUsers().get(0);
-            assertEquals(userId1, user.getUserId());
+            assertEquals(userId, user.getUserId());
             assertEquals(BudgetBoardRole.OWNER, user.getRole());
             assertNotNull(user.getCreationDate());
             assertNotNull(user.getLastUpdate());
         }
-        
+
         @Test
         void visibilityRules() {
             var userId1 = userDataUtil.user();
             var userId2 = userDataUtil.user();
             var userId3 = userDataUtil.user();
 
-            budgetBoardService.addBoard("Test1", userId1);
-            budgetBoardService.addBoard("Test2", userId1);
-            budgetBoardService.addBoard("Test3", userId2);
+            var boardId1 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId1, "Test1", "etag", userId1);
+            var boardId2 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId2, "Test2", "etag", userId1);
+            var boardId3 = UUID.randomUUID();
+            budgetBoardService.addBoard(boardId3, "Test3", "etag", userId2);
 
             assertEquals(List.of("Test1", "Test2"), budgetBoardService.getBoardsVisibleByUser(userId1).stream().map(BudgetBoard::getName).sorted().toList());
             assertEquals(List.of("Test3"), budgetBoardService.getBoardsVisibleByUser(userId2).stream().map(BudgetBoard::getName).toList());

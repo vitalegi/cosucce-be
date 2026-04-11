@@ -37,7 +37,7 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
         void when_authenticated_then_responseContainsData() throws Exception {
             mockMvc.perform(request().with(boardMember)) //
                     .andExpect(status().isOk()) //
-                    .andExpect(jsonPath("$.accountId").isString());
+                    .andExpect(content().string(""));
         }
 
         @Test
@@ -56,7 +56,7 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
 
         MockHttpServletRequestBuilder request() {
             return post("/budget/board/" + boardId + "/account") //
-                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().label("aaa").icon("bbb").enabled(true).etag("ccc").build())) //
+                    .content(asString(BudgetBoardAccountAddOrUpdateRequest.builder().accountId(UUID.randomUUID()).label("aaa").icon("bbb").enabled(true).etag("ccc").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -65,7 +65,8 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
     class Update {
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
-            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
+            var accountId = UUID.randomUUID();
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
             mockMvc.perform(request(accountId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
@@ -103,7 +104,8 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
     class GetById {
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
-            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
+            var accountId = UUID.randomUUID();
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
             mockMvc.perform(request(boardId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(jsonPath("$[0].boardId").value(boardId.toString())) //
@@ -143,7 +145,8 @@ public class BudgetBoardAccountResourceTests extends AbstractBudgetResourceTests
     class Delete {
         @Test
         void when_authenticated_then_ok() throws Exception {
-            var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
+            var accountId = UUID.randomUUID();
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
             mockMvc.perform(request(boardId, accountId).with(boardOwner)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));

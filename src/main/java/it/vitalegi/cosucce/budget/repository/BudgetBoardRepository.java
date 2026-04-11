@@ -21,14 +21,14 @@ public class BudgetBoardRepository {
     final DSLContext dsl;
 
 
-    public UUID addEntity(String name) {
+    public UUID addEntity(UUID boardId, String name, String etag) {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
-        var id = UUID.randomUUID();
         var record = dsl.newRecord(BUDGET_BOARD);
-        record.set(BUDGET_BOARD.BOARD_ID, id);
+        record.set(BUDGET_BOARD.BOARD_ID, boardId);
         record.set(BUDGET_BOARD.NAME, name);
+        record.set(BUDGET_BOARD.ETAG, etag);
         record.set(BUDGET_BOARD.CREATION_DATE, LocalDateTime.now());
         record.set(BUDGET_BOARD.LAST_UPDATE, LocalDateTime.now());
         record.store();

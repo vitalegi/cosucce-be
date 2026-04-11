@@ -20,7 +20,9 @@ public class BudgetAuthenticationService {
 
     public void checkPermission(UUID userId, UUID boardId, BudgetBoardPermission permission) {
         if (!hasPermission(userId, boardId, permission)) {
-            throw new UnauthorizedBoardAccessException(getPermissions(userId, boardId).toList(), permission);
+            var permissions = getPermissions(userId, boardId).toList();
+            log.info("User {} doesn't have permission {} on board {}. Available. {}", userId, permission, userId, permissions);
+            throw new UnauthorizedBoardAccessException(permissions, permission);
         }
     }
 

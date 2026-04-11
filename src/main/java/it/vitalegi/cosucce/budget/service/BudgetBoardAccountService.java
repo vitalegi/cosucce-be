@@ -3,6 +3,7 @@ package it.vitalegi.cosucce.budget.service;
 import it.vitalegi.cosucce.budget.model.BudgetBoardAccount;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardAccountRepository;
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardAccountRecord;
+import it.vitalegi.cosucce.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,23 +17,25 @@ import java.util.UUID;
 public class BudgetBoardAccountService {
     final BudgetBoardAccountRepository budgetBoardAccountRepository;
 
-    public UUID addBoardAccount(UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void addBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+        if (accountId == null) {
+            throw new IllegalArgumentException("AccountId is missing");
+        }
         if (boardId == null) {
             throw new IllegalArgumentException("BoardId is missing");
         }
-        if (label == null) {
+        if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
         }
-        if (icon == null) {
+        if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (etag == null) {
+        if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
 
-        var id = budgetBoardAccountRepository.addEntity(boardId, label, icon, enabled, etag);
-        log.info("Added Account {} on board {}: {}", id, boardId, label);
-        return id;
+        budgetBoardAccountRepository.addEntity(accountId, boardId, label, icon, enabled, etag);
+        log.info("Added Account {} on board {}: {}", accountId, boardId, label);
     }
 
     public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String etag) {
@@ -42,13 +45,13 @@ public class BudgetBoardAccountService {
         if (boardId == null) {
             throw new IllegalArgumentException("BoardId is missing");
         }
-        if (label == null) {
+        if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
         }
-        if (icon == null) {
+        if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
         }
-        if (etag == null) {
+        if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
         budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, enabled, etag);

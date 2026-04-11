@@ -2,11 +2,9 @@ package it.vitalegi.cosucce.budget.resource;
 
 import it.vitalegi.cosucce.budget.constant.BudgetBoardPermission;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAccountAddOrUpdateRequest;
-import it.vitalegi.cosucce.budget.dto.BudgetBoardAccountAddResponse;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAddRequest;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAddResponse;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardCategoryAddOrUpdateRequest;
-import it.vitalegi.cosucce.budget.dto.BudgetBoardCategoryAddResponse;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardUpdateRequest;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import it.vitalegi.cosucce.budget.model.BudgetBoardAccount;
@@ -42,10 +40,9 @@ public class BudgetBoardResource {
     final BudgetBoardCategoryService budgetBoardCategoryService;
 
     @PostMapping
-    public BudgetBoardAddResponse addBoard(@RequestBody BudgetBoardAddRequest request) {
+    public void addBoard(@RequestBody BudgetBoardAddRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
-        var id = budgetBoardService.addBoard(request.getName(), userId());
-        return new BudgetBoardAddResponse(id);
+        budgetBoardService.addBoard(request.getBoardId(), request.getName(), request.getEtag(), userId());
     }
 
     @PutMapping("/{boardId}")
@@ -76,11 +73,10 @@ public class BudgetBoardResource {
     }
 
     @PostMapping("/{boardId}/category")
-    public BudgetBoardCategoryAddResponse addCategory(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardCategoryAddOrUpdateRequest request) {
+    public void addCategory(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardCategoryAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        var id = budgetBoardCategoryService.addBoardCategory(boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
-        return new BudgetBoardCategoryAddResponse(id);
+        budgetBoardCategoryService.addBoardCategory(request.getCategoryId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
     }
 
     @PutMapping("/{boardId}/category/{categoryId}")
@@ -105,11 +101,10 @@ public class BudgetBoardResource {
     }
 
     @PostMapping("/{boardId}/account")
-    public BudgetBoardAccountAddResponse addAccount(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardAccountAddOrUpdateRequest request) {
+    public void addAccount(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardAccountAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        var id = budgetBoardAccountService.addBoardAccount(boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
-        return new BudgetBoardAccountAddResponse(id);
+        budgetBoardAccountService.addBoardAccount(request.getAccountId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
     }
 
     @PutMapping("/{boardId}/account/{accountId}")
