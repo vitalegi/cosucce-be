@@ -1,0 +1,268 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+
+    <changeSet id="v1-01-001" author="vitalegi">
+        <createTable tableName="user_data">
+            <column name="user_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ud"/>
+            </column>
+            <column name="issuer" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="v1-01-002" author="vitalegi">
+        <addUniqueConstraint constraintName="uq_ud_issuer_subject" tableName="user_data" columnNames="issuer,subject"/>
+    </changeSet>
+
+    <changeSet id="v1-01-010" author="vitalegi">
+        <createTable tableName="budget_board">
+            <column name="board_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bb"/>
+            </column>
+            <column name="name" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v1-01-020" author="vitalegi">
+        <createTable tableName="budget_board_user">
+            <column name="board_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_board_role" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="v1-01-021" author="vitalegi">
+        <addPrimaryKey tableName="budget_board_user" columnNames="board_id,user_id" constraintName="pk_bbu"/>
+    </changeSet>
+    <changeSet id="v1-01-022" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbu_bb__id"
+                baseTableName="budget_board_user"
+                baseColumnNames="board_id"
+                referencedTableName="budget_board"
+                referencedColumnNames="board_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet id="v1-01-023" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbu_bu__id"
+                baseTableName="budget_board_user"
+                baseColumnNames="user_id"
+                referencedTableName="user_data"
+                referencedColumnNames="user_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <changeSet id="v1-01-030" author="vitalegi">
+        <createTable tableName="budget_board_account">
+            <column name="account_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="bk_bba"/>
+            </column>
+            <column name="board_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="etag" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="label" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="v1-01-031" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bba_bb__id"
+                baseTableName="budget_board_account"
+                baseColumnNames="board_id"
+                referencedTableName="budget_board"
+                referencedColumnNames="board_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <changeSet id="v1-01-040" author="vitalegi">
+        <createTable tableName="budget_board_category">
+            <column name="category_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bbc"/>
+            </column>
+            <column name="board_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="etag" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="label" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="v1-01-041" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbc_bb__id"
+                baseTableName="budget_board_category"
+                baseColumnNames="board_id"
+                referencedTableName="budget_board"
+                referencedColumnNames="board_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+
+    <changeSet id="v1-01-050" author="vitalegi">
+        <createTable tableName="budget_board_entry">
+            <column name="entry_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bbe"/>
+            </column>
+            <column name="board_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="etag" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="amount" type="decimal(128, 10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated_by" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_update" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="v1-01-051" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbe_bb__id"
+                baseTableName="budget_board_entry"
+                baseColumnNames="board_id"
+                referencedTableName="budget_board"
+                referencedColumnNames="board_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet id="v1-01-052" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbe_bba__id"
+                baseTableName="budget_board_entry"
+                baseColumnNames="account_id"
+                referencedTableName="budget_board_account"
+                referencedColumnNames="account_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet id="v1-01-053" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbe_bbc__id"
+                baseTableName="budget_board_entry"
+                baseColumnNames="category_id"
+                referencedTableName="budget_board_category"
+                referencedColumnNames="category_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet id="v1-01-054" author="vitalegi">
+        <addForeignKeyConstraint
+                constraintName="fk_bbe_ud__id"
+                baseTableName="budget_board_entry"
+                baseColumnNames="last_updated_by"
+                referencedTableName="user_data"
+                referencedColumnNames="user_id"
+                deferrable="false"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+</databaseChangeLog>
