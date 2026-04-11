@@ -31,11 +31,13 @@ public class BudgetBoardService {
         }
         var boardId = budgetBoardRepository.addEntity(name);
         budgetBoardUserRepository.addEntity(boardId, userId, BudgetBoardRole.OWNER);
+        log.info("Added board {}: {}", boardId, name);
         return boardId;
     }
 
     public void updateBoard(UUID boardId, String name) {
         budgetBoardRepository.updateEntity(boardId, name);
+        log.info("Updated board {}: {}", boardId, name);
     }
 
     public BudgetBoard getBoard(UUID boardId) {
@@ -52,6 +54,7 @@ public class BudgetBoardService {
 
     public void deleteBoard(UUID boardId) {
         budgetBoardRepository.deleteEntityById(boardId);
+        log.info("Deleted board {}", boardId);
     }
 
     public List<BudgetBoardUser> getBoardUsers(UUID boardId) {

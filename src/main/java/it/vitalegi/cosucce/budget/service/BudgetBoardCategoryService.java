@@ -30,7 +30,9 @@ public class BudgetBoardCategoryService {
             throw new IllegalArgumentException("ETag is missing");
         }
 
-        return budgetBoardCategoryRepository.addEntity(boardId, label, icon, enabled, etag);
+        var id = budgetBoardCategoryRepository.addEntity(boardId, label, icon, enabled, etag);
+        log.info("Added Category {} on board {}: {}", id, boardId, label);
+        return id;
     }
 
     public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
@@ -50,14 +52,16 @@ public class BudgetBoardCategoryService {
             throw new IllegalArgumentException("ETag is missing");
         }
         budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, enabled, etag);
+        log.info("Updated Category {} on board {}: {}", categoryId, boardId, label);
     }
 
     public List<BudgetBoardCategory> getBoardCategories(UUID boardId) {
         return budgetBoardCategoryRepository.getEntitiesByBoardId(boardId).stream().map(this::mapBudgetBoardCategory).toList();
     }
 
-    public void deleteBoardCategory(UUID categoryId) {
+    public void deleteBoardCategory(UUID categoryId, UUID boardId) {
         budgetBoardCategoryRepository.deleteEntityById(categoryId);
+        log.info("Deleted Category {} on board {}", categoryId, boardId);
     }
 
     protected BudgetBoardCategory mapBudgetBoardCategory(BudgetBoardCategoryRecord entity) {

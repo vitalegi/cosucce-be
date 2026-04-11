@@ -151,7 +151,7 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = budgetBoardService.addBoard("Test1", userId);
             var categoryId = budgetBoardCategoryService.addBoardCategory(boardId, "aaa", "bbb", true, "ccc");
 
-            budgetBoardCategoryService.deleteBoardCategory(categoryId);
+            budgetBoardCategoryService.deleteBoardCategory(categoryId, boardId);
 
             assertNull(dsl.selectFrom(BUDGET_BOARD_CATEGORY).where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId)).fetchOne());
         }
@@ -163,7 +163,7 @@ public class BudgetBoardCategoryServiceTests {
             var categoryId1 = budgetBoardCategoryService.addBoardCategory(boardId, "aaa1", "bbb", true, "ccc");
             var categoryId2 = budgetBoardCategoryService.addBoardCategory(boardId, "aaa2", "bbb", true, "ccc");
 
-            budgetBoardCategoryService.deleteBoardCategory(categoryId1);
+            budgetBoardCategoryService.deleteBoardCategory(categoryId1, boardId);
 
             assertNull(dsl.selectFrom(BUDGET_BOARD_CATEGORY).where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId1)).fetchOne());
             assertNotNull(dsl.selectFrom(BUDGET_BOARD_CATEGORY).where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId2)).fetchOne());

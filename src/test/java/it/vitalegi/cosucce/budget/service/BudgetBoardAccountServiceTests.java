@@ -151,7 +151,7 @@ public class BudgetBoardAccountServiceTests {
             var boardId = budgetBoardService.addBoard("Test1", userId);
             var accountId = budgetBoardAccountService.addBoardAccount(boardId, "aaa", "bbb", true, "ccc");
 
-            budgetBoardAccountService.deleteBoardAccount(accountId);
+            budgetBoardAccountService.deleteBoardAccount(accountId, boardId);
 
             assertNull(dsl.selectFrom(BUDGET_BOARD_ACCOUNT).where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(accountId)).fetchOne());
         }
@@ -163,7 +163,7 @@ public class BudgetBoardAccountServiceTests {
             var accountId1 = budgetBoardAccountService.addBoardAccount(boardId, "aaa1", "bbb", true, "ccc");
             var accountId2 = budgetBoardAccountService.addBoardAccount(boardId, "aaa2", "bbb", true, "ccc");
 
-            budgetBoardAccountService.deleteBoardAccount(accountId1);
+            budgetBoardAccountService.deleteBoardAccount(accountId1, boardId);
 
             assertNull(dsl.selectFrom(BUDGET_BOARD_ACCOUNT).where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(accountId1)).fetchOne());
             assertNotNull(dsl.selectFrom(BUDGET_BOARD_ACCOUNT).where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(accountId2)).fetchOne());

@@ -30,7 +30,9 @@ public class BudgetBoardAccountService {
             throw new IllegalArgumentException("ETag is missing");
         }
 
-        return budgetBoardAccountRepository.addEntity(boardId, label, icon, enabled, etag);
+        var id = budgetBoardAccountRepository.addEntity(boardId, label, icon, enabled, etag);
+        log.info("Added Account {} on board {}: {}", id, boardId, label);
+        return id;
     }
 
     public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String etag) {
@@ -50,14 +52,16 @@ public class BudgetBoardAccountService {
             throw new IllegalArgumentException("ETag is missing");
         }
         budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, enabled, etag);
+        log.info("Updated Account {} on board {}: {}", accountId, boardId, label);
     }
 
     public List<BudgetBoardAccount> getBoardAccounts(UUID boardId) {
         return budgetBoardAccountRepository.getEntitiesByBoardId(boardId).stream().map(this::mapBudgetBoardAccount).toList();
     }
 
-    public void deleteBoardAccount(UUID accountId) {
+    public void deleteBoardAccount(UUID accountId, UUID boardId) {
         budgetBoardAccountRepository.deleteEntityById(accountId);
+        log.info("Deleted Account {} on board {}", accountId, boardId);
     }
 
     protected BudgetBoardAccount mapBudgetBoardAccount(BudgetBoardAccountRecord entity) {

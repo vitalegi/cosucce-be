@@ -101,7 +101,7 @@ public class BudgetBoardResource {
     public void deleteCategory(@PathVariable("boardId") UUID boardId, @PathVariable("categoryId") UUID categoryId) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.ADMIN);
-        budgetBoardCategoryService.deleteBoardCategory(categoryId);
+        budgetBoardCategoryService.deleteBoardCategory(categoryId, boardId);
     }
 
     @PostMapping("/{boardId}/account")
@@ -130,7 +130,7 @@ public class BudgetBoardResource {
     public void deleteAccount(@PathVariable("boardId") UUID boardId, @PathVariable("accountId") UUID accountId) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.ADMIN);
-        budgetBoardAccountService.deleteBoardAccount(accountId);
+        budgetBoardAccountService.deleteBoardAccount(accountId, boardId);
     }
 
     UUID userId() {
