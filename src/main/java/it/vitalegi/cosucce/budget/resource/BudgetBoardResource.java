@@ -4,12 +4,15 @@ import it.vitalegi.cosucce.budget.constant.BudgetBoardPermission;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAccountAddOrUpdateRequest;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardAddOrUpdateRequest;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardCategoryAddOrUpdateRequest;
+import it.vitalegi.cosucce.budget.dto.BudgetBoardEntryAddOrUpdateRequest;
 import it.vitalegi.cosucce.budget.model.BudgetBoard;
 import it.vitalegi.cosucce.budget.model.BudgetBoardAccount;
 import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
+import it.vitalegi.cosucce.budget.model.BudgetBoardEntry;
 import it.vitalegi.cosucce.budget.service.BudgetAuthenticationService;
 import it.vitalegi.cosucce.budget.service.BudgetBoardAccountService;
 import it.vitalegi.cosucce.budget.service.BudgetBoardCategoryService;
+import it.vitalegi.cosucce.budget.service.BudgetBoardEntryService;
 import it.vitalegi.cosucce.budget.service.BudgetBoardService;
 import it.vitalegi.cosucce.security.model.Permission;
 import it.vitalegi.cosucce.security.service.AuthenticationService;
@@ -35,6 +38,7 @@ public class BudgetBoardResource {
     final AuthenticationService authenticationService;
     final BudgetAuthenticationService budgetAuthenticationService;
     final BudgetBoardService budgetBoardService;
+    final BudgetBoardEntryService budgetBoardEntryService;
     final BudgetBoardAccountService budgetBoardAccountService;
     final BudgetBoardCategoryService budgetBoardCategoryService;
 
@@ -70,6 +74,35 @@ public class BudgetBoardResource {
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.ADMIN);
         budgetBoardService.deleteBoard(boardId);
     }
+
+    @PostMapping("/{boardId}/entry")
+    public void addEntry(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardEntryAddOrUpdateRequest request) {
+        authenticationService.checkPermission(Permission.BUDGET_VIEW);
+        budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
+        budgetBoardEntryService.addBoardEntry(request.getEntryId(), boardId, request.getDate(), request.getAccountId(), request.getCategoryId(), request.getDescription(), request.getAmount(), userId(), request.getEtag());
+    }
+
+    @PutMapping("/{boardId}/entry")
+    public void updateEntry(@PathVariable("boardId") UUID boardId, @RequestHeader("x-etag") String oldEtag, @RequestBody BudgetBoardEntryAddOrUpdateRequest request) {
+        authenticationService.checkPermission(Permission.BUDGET_VIEW);
+        budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
+        budgetBoardEntryService.updateBoardEntry(request.getEntryId(), boardId, request.getDate(), request.getAccountId(), request.getCategoryId(), request.getDescription(), request.getAmount(),  userId(),request.getEtag(), oldEtag);
+    }
+
+    @GetMapping("/{boardId}/entry")
+    public List<BudgetBoardEntry> getEntriesByBoardId(@PathVariable("boardId") UUID boardId) {
+        authenticationService.checkPermission(Permission.BUDGET_VIEW);
+        budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.VIEW);
+        return budgetBoardEntryService.getBoardEntries(boardId);
+    }
+
+    @DeleteMapping("/{boardId}/entry/{entryId}")
+    public void deleteEntry(@PathVariable("boardId") UUID boardId, @PathVariable("entryId") UUID entryId) {
+        authenticationService.checkPermission(Permission.BUDGET_VIEW);
+        budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.ADMIN);
+        budgetBoardEntryService.deleteBoardEntry(entryId, boardId);
+    }
+
 
     @PostMapping("/{boardId}/category")
     public void addCategory(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardCategoryAddOrUpdateRequest request) {

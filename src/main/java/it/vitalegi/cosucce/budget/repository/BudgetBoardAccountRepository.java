@@ -45,9 +45,9 @@ public class BudgetBoardAccountRepository {
         return dsl.selectFrom(BUDGET_BOARD_ACCOUNT.where(BUDGET_BOARD_ACCOUNT.BOARD_ID.eq(boardId))).fetch();
     }
 
-    public void deleteEntityById(UUID categoryId) {
+    public void deleteEntityById(UUID accountId) {
         dsl.deleteFrom(BUDGET_BOARD_ACCOUNT) //
-                .where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(categoryId)) //
+                .where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(accountId)) //
                 .execute();
     }
 

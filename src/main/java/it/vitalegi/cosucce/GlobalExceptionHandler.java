@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce;
 
+import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.security.exception.MissingCookieException;
 import it.vitalegi.cosucce.security.exception.UnauthorizedAccessException;
 import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
@@ -64,6 +65,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GenericErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), "Resource not found");
         log.info("Error HttpRequestMethodNotSupportedException on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ETagNotMatchedException.class)
+    public ResponseEntity<GenericErrorResponse> handleETagNotMatchedException(ETagNotMatchedException ex, HttpServletRequest request) {
+        var error = new GenericErrorResponse(Instant.now(), ex.getClass().getSimpleName(), ex.getMessage());
+        log.info("Error ETagNotMatchedException on {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
