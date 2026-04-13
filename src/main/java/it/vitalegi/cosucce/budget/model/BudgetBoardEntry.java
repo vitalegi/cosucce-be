@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce.budget.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class BudgetBoardEntry {
     private UUID accountId;
     private UUID categoryId;
     private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal amount;
     private String etag;
     private UUID lastUpdatedBy;
