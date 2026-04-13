@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -141,7 +142,7 @@ public class BudgetBoardEntryResourceTests extends AbstractBudgetResourceTests {
                     .andExpect(jsonPath("$[0].boardId").value(boardId.toString())) //
                     .andExpect(jsonPath("$[0].accountId").value(accountId.toString())) //
                     .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString())) //
-                    .andExpect(jsonPath("$[0].date").value("2026-04-12")) //
+                    .andExpect(jsonPath("$[0].date").value(DATE.format(DateTimeFormatter.ISO_DATE))) //
                     .andExpect(jsonPath("$[0].amount").value(AMOUNT.toPlainString())) //
                     .andExpect(jsonPath("$[0].etag").value(ETAG)) //
                     .andExpect(jsonPath("$[0].lastUpdatedBy").value(userId.toString())) //

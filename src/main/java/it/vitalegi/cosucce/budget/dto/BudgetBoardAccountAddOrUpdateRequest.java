@@ -15,6 +15,7 @@ public class BudgetBoardAccountAddOrUpdateRequest {
     UUID accountId;
     String label;
     String icon;
+    String color;
     boolean enabled;
     String etag;
 }

@@ -45,12 +45,13 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
             var actual = dsl.selectFrom(BUDGET_BOARD_CATEGORY).where(BUDGET_BOARD_CATEGORY.CATEGORY_ID.eq(categoryId)).fetchOne();
             assertNotNull(actual);
             assertEquals(boardId, actual.getBoardId());
             assertEquals("aaa", actual.getLabel());
             assertEquals("bbb", actual.getIcon());
+            assertEquals("red", actual.getColor());
             assertEquals(true, actual.getEnabled());
             assertEquals("ccc", actual.getEtag());
             assertNotNull(actual.getCreationDate());
@@ -63,25 +64,25 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(null, boardId, "aaa", "bbb", true, "ccc"));
+            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(null, boardId, "aaa", "bbb", "red", true, "ccc"));
             assertEquals("CategoryId is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, null, "aaa", "bbb", true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, null, "aaa", "bbb", "red", true, "ccc"));
             assertEquals("BoardId is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, null, "bbb", true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, null, "bbb", "red", true, "ccc"));
             assertEquals("Label is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", null, true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", null, "red", true, "ccc"));
             assertEquals("Icon is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, null));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, null));
             assertEquals("ETag is missing", e.getMessage());
 
-            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, UUID.randomUUID(), "aaa", "bbb", true, "ccc"));
+            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, UUID.randomUUID(), "aaa", "bbb", "red", true, "ccc"));
 
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
-            assertThrows(RuntimeException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc"));
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
+            assertThrows(RuntimeException.class, () -> budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc"));
         }
     }
 
@@ -93,7 +94,7 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
             var actual = budgetBoardCategoryService.getBoardCategories(boardId);
             assertEquals(1, actual.size());
             var entry = actual.get(0);
@@ -101,6 +102,7 @@ public class BudgetBoardCategoryServiceTests {
             assertEquals(boardId, entry.getBoardId());
             assertEquals("aaa", entry.getLabel());
             assertEquals("bbb", entry.getIcon());
+            assertEquals("red", entry.getColor());
             assertTrue(entry.isEnabled());
             assertEquals("ccc", entry.getEtag());
             assertNotNull(entry.getCreationDate());
@@ -116,9 +118,9 @@ public class BudgetBoardCategoryServiceTests {
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var boardId3 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId3, "Test", "etag", userId);
-            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId1, "aaa1", "bbb", true, "ccc");
-            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId1, "aaa2", "bbb", true, "ccc");
-            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId2, "aaa3", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId1, "aaa1", "bbb", "red", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId1, "aaa2", "bbb", "red", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId2, "aaa3", "bbb", "red", true, "ccc");
             assertEquals(List.of("aaa1", "aaa2"), budgetBoardCategoryService.getBoardCategories(boardId1).stream().map(BudgetBoardCategory::getLabel).sorted().toList());
             assertEquals(List.of("aaa3"), budgetBoardCategoryService.getBoardCategories(boardId2).stream().map(BudgetBoardCategory::getLabel).sorted().toList());
             assertEquals(List.of(), budgetBoardCategoryService.getBoardCategories(boardId3));
@@ -133,15 +135,16 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
 
-            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "1", "2", false, "3", "ccc");
+            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "1", "2", "blue", false, "3", "ccc");
 
             var actual = budgetBoardCategoryService.getBoardCategories(boardId).get(0);
             assertEquals(categoryId, actual.getCategoryId());
             assertEquals(boardId, actual.getBoardId());
             assertEquals("1", actual.getLabel());
             assertEquals("2", actual.getIcon());
+            assertEquals("blue", actual.getColor());
             assertFalse(actual.isEnabled());
             assertEquals("3", actual.getEtag());
             assertNotNull(actual.getCreationDate());
@@ -154,9 +157,9 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "etag");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "etag");
 
-            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "aaa", "bbb", true, "yyy", "xxx"));
+            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "yyy", "xxx"));
             assertEquals("etag", e.getExpectedEtag());
             assertEquals("xxx", e.getActualETag());
             assertEquals(categoryId, e.getEntityId());
@@ -169,10 +172,10 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa1", "bbb", true, "ccc");
-            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId, "aaa2", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa1", "bbb", "red", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(UUID.randomUUID(), boardId, "aaa2", "bbb", "red", true, "ccc");
 
-            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "xxx", "2", false, "3", "ccc");
+            budgetBoardCategoryService.updateBoardCategory(categoryId, boardId, "xxx", "2", "red", false, "3", "ccc");
 
             assertEquals(List.of("aaa2", "xxx"), budgetBoardCategoryService.getBoardCategories(boardId).stream().map(BudgetBoardCategory::getLabel).sorted().toList());
         }
@@ -186,7 +189,7 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
 
             budgetBoardCategoryService.deleteBoardCategory(categoryId, boardId);
 
@@ -199,9 +202,9 @@ public class BudgetBoardCategoryServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var categoryId1 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId1, boardId, "aaa1", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId1, boardId, "aaa1", "bbb", "red", true, "ccc");
             var categoryId2 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId, "aaa2", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId, "aaa2", "bbb", "red", true, "ccc");
 
             budgetBoardCategoryService.deleteBoardCategory(categoryId1, boardId);
 

@@ -16,12 +16,13 @@ import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_CATEGORY;
 public class BudgetBoardCategoryRepository {
     final DSLContext dsl;
 
-    public void addEntity(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void addEntity(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String etag) {
         var record = dsl.newRecord(BUDGET_BOARD_CATEGORY);
         record.set(BUDGET_BOARD_CATEGORY.CATEGORY_ID, categoryId);
         record.set(BUDGET_BOARD_CATEGORY.BOARD_ID, boardId);
         record.set(BUDGET_BOARD_CATEGORY.LABEL, label);
         record.set(BUDGET_BOARD_CATEGORY.ICON, icon);
+        record.set(BUDGET_BOARD_CATEGORY.COLOR, color);
         record.set(BUDGET_BOARD_CATEGORY.ENABLED, enabled);
         record.set(BUDGET_BOARD_CATEGORY.ETAG, etag);
         record.set(BUDGET_BOARD_CATEGORY.CREATION_DATE, LocalDateTime.now());
@@ -29,11 +30,12 @@ public class BudgetBoardCategoryRepository {
         record.store();
     }
 
-    public void updateEntity(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void updateEntity(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String etag) {
         dsl.update(BUDGET_BOARD_CATEGORY) //
                 .set(BUDGET_BOARD_CATEGORY.BOARD_ID, boardId) //
                 .set(BUDGET_BOARD_CATEGORY.LABEL, label) //
                 .set(BUDGET_BOARD_CATEGORY.ICON, icon) //
+                .set(BUDGET_BOARD_CATEGORY.COLOR, color) //
                 .set(BUDGET_BOARD_CATEGORY.ENABLED, enabled) //
                 .set(BUDGET_BOARD_CATEGORY.ETAG, etag) //
                 .set(BUDGET_BOARD_CATEGORY.LAST_UPDATE, LocalDateTime.now()) //

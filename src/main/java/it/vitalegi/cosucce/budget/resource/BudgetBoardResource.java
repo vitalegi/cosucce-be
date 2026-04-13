@@ -86,7 +86,7 @@ public class BudgetBoardResource {
     public void updateEntry(@PathVariable("boardId") UUID boardId, @RequestHeader("x-etag") String oldEtag, @RequestBody BudgetBoardEntryAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        budgetBoardEntryService.updateBoardEntry(request.getEntryId(), boardId, request.getDate(), request.getAccountId(), request.getCategoryId(), request.getDescription(), request.getAmount(),  userId(),request.getEtag(), oldEtag);
+        budgetBoardEntryService.updateBoardEntry(request.getEntryId(), boardId, request.getDate(), request.getAccountId(), request.getCategoryId(), request.getDescription(), request.getAmount(), userId(), request.getEtag(), oldEtag);
     }
 
     @GetMapping("/{boardId}/entry")
@@ -108,14 +108,14 @@ public class BudgetBoardResource {
     public void addCategory(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardCategoryAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        budgetBoardCategoryService.addBoardCategory(request.getCategoryId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
+        budgetBoardCategoryService.addBoardCategory(request.getCategoryId(), boardId, request.getLabel(), request.getIcon(), request.getColor(), request.isEnabled(), request.getEtag());
     }
 
     @PutMapping("/{boardId}/category")
     public void updateCategory(@PathVariable("boardId") UUID boardId, @RequestHeader("x-etag") String oldEtag, @RequestBody BudgetBoardCategoryAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        budgetBoardCategoryService.updateBoardCategory(request.getCategoryId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag(), oldEtag);
+        budgetBoardCategoryService.updateBoardCategory(request.getCategoryId(), boardId, request.getLabel(), request.getIcon(), request.getColor(), request.isEnabled(), request.getEtag(), oldEtag);
     }
 
     @GetMapping("/{boardId}/category")
@@ -136,14 +136,14 @@ public class BudgetBoardResource {
     public void addAccount(@PathVariable("boardId") UUID boardId, @RequestBody BudgetBoardAccountAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        budgetBoardAccountService.addBoardAccount(request.getAccountId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag());
+        budgetBoardAccountService.addBoardAccount(request.getAccountId(), boardId, request.getLabel(), request.getIcon(), request.getColor(), request.isEnabled(), request.getEtag());
     }
 
     @PutMapping("/{boardId}/account")
     public void updateAccount(@PathVariable("boardId") UUID boardId, @RequestHeader("x-etag") String oldEtag, @RequestBody BudgetBoardAccountAddOrUpdateRequest request) {
         authenticationService.checkPermission(Permission.BUDGET_VIEW);
         budgetAuthenticationService.checkPermission(userId(), boardId, BudgetBoardPermission.EDIT);
-        budgetBoardAccountService.updateBoardAccount(request.getAccountId(), boardId, request.getLabel(), request.getIcon(), request.isEnabled(), request.getEtag(), oldEtag);
+        budgetBoardAccountService.updateBoardAccount(request.getAccountId(), boardId, request.getLabel(), request.getIcon(), request.getColor(), request.isEnabled(), request.getEtag(), oldEtag);
     }
 
     @GetMapping("/{boardId}/account")

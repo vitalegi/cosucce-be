@@ -15,6 +15,7 @@ public class BudgetBoardCategoryAddOrUpdateRequest {
     UUID categoryId;
     String label;
     String icon;
+    String color;
     boolean enabled;
     String etag;
 }

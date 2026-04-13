@@ -11,6 +11,7 @@ public class BudgetBoardAccount {
     private UUID boardId;
     private String label;
     private String icon;
+    private String color;
     private boolean enabled;
     private String etag;
     private LocalDateTime creationDate;

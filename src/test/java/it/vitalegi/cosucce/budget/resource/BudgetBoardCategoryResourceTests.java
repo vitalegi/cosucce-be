@@ -66,7 +66,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "aaa");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "aaa");
             mockMvc.perform(request(categoryId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
@@ -106,11 +106,13 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
             mockMvc.perform(request(boardId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(jsonPath("$[0].boardId").value(boardId.toString())) //
                     .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString())) //
+                    .andExpect(jsonPath("$[0].icon").value("bbb")) //
+                    .andExpect(jsonPath("$[0].color").value("red"))
                     .andExpect(jsonPath("$[0].creationDate").exists()) //
                     .andExpect(jsonPath("$[0].lastUpdate").exists());
         }
@@ -147,7 +149,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_ok() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
             mockMvc.perform(request(boardId, categoryId).with(boardOwner)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));

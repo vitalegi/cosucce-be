@@ -19,7 +19,7 @@ import java.util.UUID;
 public class BudgetBoardAccountService {
     final BudgetBoardAccountRepository budgetBoardAccountRepository;
 
-    public void addBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void addBoardAccount(UUID accountId, UUID boardId, String label, String icon, String color, boolean enabled, String etag) {
         if (accountId == null) {
             throw new IllegalArgumentException("AccountId is missing");
         }
@@ -36,12 +36,12 @@ public class BudgetBoardAccountService {
             throw new IllegalArgumentException("ETag is missing");
         }
 
-        budgetBoardAccountRepository.addEntity(accountId, boardId, label, icon, enabled, etag);
+        budgetBoardAccountRepository.addEntity(accountId, boardId, label, icon, color, enabled, etag);
         log.info("Added Account {} on board {}. Etag: {}", accountId, boardId, etag);
     }
 
     @Transactional
-    public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, boolean enabled, String newEtag, String oldEtag) {
+    public void updateBoardAccount(UUID accountId, UUID boardId, String label, String icon, String color, boolean enabled, String newEtag, String oldEtag) {
         if (accountId == null) {
             throw new IllegalArgumentException("AccountId is missing");
         }
@@ -64,7 +64,7 @@ public class BudgetBoardAccountService {
         if (!existing.getEtag().equals(oldEtag)) {
             throw new ETagNotMatchedException(existing.getEtag(), oldEtag, accountId, "BudgetAccount");
         }
-        budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, enabled, newEtag);
+        budgetBoardAccountRepository.updateEntity(accountId, boardId, label, icon, color, enabled, newEtag);
         log.info("Updated Account {} on board {}. ETag: {} => {}", accountId, boardId, oldEtag, newEtag);
     }
 
@@ -83,6 +83,7 @@ public class BudgetBoardAccountService {
         out.setBoardId(entity.getBoardId());
         out.setLabel(entity.getLabel());
         out.setIcon(entity.getIcon());
+        out.setColor(entity.getColor());
         out.setEnabled(entity.getEnabled());
         out.setEtag(entity.getEtag());
         out.setCreationDate(entity.getCreationDate());

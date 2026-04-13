@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Slf4j
@@ -59,9 +58,9 @@ public class BudgetBoardEntryServiceTests {
         boardId = UUID.randomUUID();
         budgetBoardService.addBoard(boardId, "Test", "etag", userId);
         accountId = UUID.randomUUID();
-        budgetBoardAccountService.addBoardAccount(accountId, boardId, "account", "aaa", true, "1");
+        budgetBoardAccountService.addBoardAccount(accountId, boardId, "account", "aaa", "red", true, "1");
         categoryId = UUID.randomUUID();
-        budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "category", "aaa", true, "1");
+        budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "category", "aaa", "red", true, "1");
         entryId = UUID.randomUUID();
     }
 
@@ -122,7 +121,7 @@ public class BudgetBoardEntryServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var accountId2 = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", true, "1");
+            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", "red", true, "1");
 
             var e = assertThrows(RuntimeException.class, () -> budgetBoardEntryService.addBoardEntry(UUID.randomUUID(), boardId, DATE, accountId2, categoryId, "123", AMOUNT, userId, "1"));
             assertEquals("Invalid Account", e.getMessage());
@@ -133,7 +132,7 @@ public class BudgetBoardEntryServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var categoryId2 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", true, "1");
+            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", "red", true, "1");
 
             var e = assertThrows(RuntimeException.class, () -> budgetBoardEntryService.addBoardEntry(UUID.randomUUID(), boardId, DATE, accountId, categoryId2, "123", AMOUNT, userId, "1"));
             assertEquals("Invalid Category", e.getMessage());
@@ -167,16 +166,16 @@ public class BudgetBoardEntryServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var accountId2 = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", true, "1");
+            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", "red", true, "1");
             var categoryId2 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", true, "1");
+            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", "red", true, "1");
 
             var boardId3 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId3, "Test", "etag", userId);
             var accountId3 = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId3, boardId3, "account", "aaa", true, "1");
+            budgetBoardAccountService.addBoardAccount(accountId3, boardId3, "account", "aaa", "red", true, "1");
             var categoryId3 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId3, boardId3, "category", "aaa", true, "1");
+            budgetBoardCategoryService.addBoardCategory(categoryId3, boardId3, "category", "aaa", "red", true, "1");
 
             var entryId2 = UUID.randomUUID();
             budgetBoardEntryService.addBoardEntry(entryId2, boardId, DATE, accountId, categoryId, "456", AMOUNT, userId, "1");
@@ -196,8 +195,8 @@ public class BudgetBoardEntryServiceTests {
             addEntry();
             var accountId2 = UUID.randomUUID();
             var categoryId2 = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId2, boardId, "account", "aaa", true, "1");
-            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId, "category", "aaa", true, "1");
+            budgetBoardAccountService.addBoardAccount(accountId2, boardId, "account", "aaa", "red", true, "1");
+            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId, "category", "aaa", "red", true, "1");
 
             budgetBoardEntryService.updateBoardEntry(entryId, boardId, LocalDate.of(1990, 10, 11), accountId2, categoryId2, "xxx", BigDecimal.valueOf(100), userId, "2", "1");
 
@@ -259,7 +258,7 @@ public class BudgetBoardEntryServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var accountId2 = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", true, "1");
+            budgetBoardAccountService.addBoardAccount(accountId2, boardId2, "account", "aaa", "red", true, "1");
 
             var e = assertThrows(RuntimeException.class, () -> budgetBoardEntryService.updateBoardEntry(entryId, boardId, DATE, accountId2, categoryId, "123", AMOUNT, userId, "2", "1"));
             assertEquals("Invalid Account", e.getMessage());
@@ -270,7 +269,7 @@ public class BudgetBoardEntryServiceTests {
             var boardId2 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId2, "Test", "etag", userId);
             var categoryId2 = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", true, "1");
+            budgetBoardCategoryService.addBoardCategory(categoryId2, boardId2, "category", "aaa", "red", true, "1");
 
             addEntry();
             var e = assertThrows(RuntimeException.class, () -> budgetBoardEntryService.updateBoardEntry(entryId, boardId, DATE, accountId, categoryId2, "123", AMOUNT, userId, "2", "1"));

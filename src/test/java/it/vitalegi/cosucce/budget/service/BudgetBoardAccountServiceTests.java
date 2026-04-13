@@ -45,12 +45,13 @@ public class BudgetBoardAccountServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc");
             var actual = dsl.selectFrom(BUDGET_BOARD_ACCOUNT).where(BUDGET_BOARD_ACCOUNT.ACCOUNT_ID.eq(accountId)).fetchOne();
             assertNotNull(actual);
             assertEquals(boardId, actual.getBoardId());
             assertEquals("aaa", actual.getLabel());
             assertEquals("bbb", actual.getIcon());
+            assertEquals("red", actual.getColor());
             assertEquals(true, actual.getEnabled());
             assertEquals("ccc", actual.getEtag());
             assertNotNull(actual.getCreationDate());
@@ -64,25 +65,25 @@ public class BudgetBoardAccountServiceTests {
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
 
-            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(null, boardId, "aaa", "bbb", true, "ccc"));
+            var e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(null, boardId, "aaa", "bbb", "red", true, "ccc"));
             assertEquals("AccountId is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, null, "aaa", "bbb", true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, null, "aaa", "bbb", "red", true, "ccc"));
             assertEquals("BoardId is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, null, "bbb", true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, null, "bbb", "red", true, "ccc"));
             assertEquals("Label is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", null, true, "ccc"));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", null, "red", true, "ccc"));
             assertEquals("Icon is missing", e.getMessage());
 
-            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, null));
+            e = assertThrows(IllegalArgumentException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, null));
             assertEquals("ETag is missing", e.getMessage());
 
-            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, UUID.randomUUID(), "aaa", "bbb", true, "ccc"));
+            assertThrows(DataIntegrityViolationException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, UUID.randomUUID(), "aaa", "bbb", "red", true, "ccc"));
 
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
-            assertThrows(RuntimeException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc"), "Duplicated entry");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc");
+            assertThrows(RuntimeException.class, () -> budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc"), "Duplicated entry");
         }
     }
 
@@ -94,7 +95,7 @@ public class BudgetBoardAccountServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc");
             var actual = budgetBoardAccountService.getBoardAccounts(boardId);
             assertEquals(1, actual.size());
             var entry = actual.get(0);
@@ -102,6 +103,7 @@ public class BudgetBoardAccountServiceTests {
             assertEquals(boardId, entry.getBoardId());
             assertEquals("aaa", entry.getLabel());
             assertEquals("bbb", entry.getIcon());
+            assertEquals("red", entry.getColor());
             assertTrue(entry.isEnabled());
             assertEquals("ccc", entry.getEtag());
             assertNotNull(entry.getCreationDate());
@@ -118,9 +120,9 @@ public class BudgetBoardAccountServiceTests {
             var boardId3 = UUID.randomUUID();
             budgetBoardService.addBoard(boardId3, "Test", "etag", userId);
 
-            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId1, "aaa1", "bbb", true, "ccc");
-            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId1, "aaa2", "bbb", true, "ccc");
-            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId2, "aaa3", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId1, "aaa1", "bbb", "red", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId1, "aaa2", "bbb", "red", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId2, "aaa3", "bbb", "red", true, "ccc");
             assertEquals(List.of("aaa1", "aaa2"), budgetBoardAccountService.getBoardAccounts(boardId1).stream().map(BudgetBoardAccount::getLabel).sorted().toList());
             assertEquals(List.of("aaa3"), budgetBoardAccountService.getBoardAccounts(boardId2).stream().map(BudgetBoardAccount::getLabel).sorted().toList());
             assertEquals(List.of(), budgetBoardAccountService.getBoardAccounts(boardId3));
@@ -135,15 +137,16 @@ public class BudgetBoardAccountServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc");
 
-            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "1", "2", false, "3", "ccc");
+            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "1", "2", "blue", false, "3", "ccc");
 
             var actual = budgetBoardAccountService.getBoardAccounts(boardId).get(0);
             assertEquals(accountId, actual.getAccountId());
             assertEquals(boardId, actual.getBoardId());
             assertEquals("1", actual.getLabel());
             assertEquals("2", actual.getIcon());
+            assertEquals("blue", actual.getColor());
             assertFalse(actual.isEnabled());
             assertEquals("3", actual.getEtag());
             assertNotNull(actual.getCreationDate());
@@ -156,9 +159,9 @@ public class BudgetBoardAccountServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag1", userId);
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "etag");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "etag");
 
-            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardAccountService.updateBoardAccount(accountId, boardId, "aaa", "bbb", true, "yyy", "xxx"));
+            var e = assertThrows(ETagNotMatchedException.class, () -> budgetBoardAccountService.updateBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "yyy", "xxx"));
             assertEquals("etag", e.getExpectedEtag());
             assertEquals("xxx", e.getActualETag());
             assertEquals(accountId, e.getEntityId());
@@ -172,10 +175,10 @@ public class BudgetBoardAccountServiceTests {
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
 
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa1", "bbb", true, "ccc");
-            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId, "aaa2", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa1", "bbb", "red", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(UUID.randomUUID(), boardId, "aaa2", "bbb", "red", true, "ccc");
 
-            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "xxx", "2", false, "3", "ccc");
+            budgetBoardAccountService.updateBoardAccount(accountId, boardId, "xxx", "2", "red", false, "3", "ccc");
 
             assertEquals(List.of("aaa2", "xxx"), budgetBoardAccountService.getBoardAccounts(boardId).stream().map(BudgetBoardAccount::getLabel).sorted().toList());
         }
@@ -189,7 +192,7 @@ public class BudgetBoardAccountServiceTests {
             var boardId = UUID.randomUUID();
             budgetBoardService.addBoard(boardId, "Test", "etag", userId);
             var accountId = UUID.randomUUID();
-            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId, boardId, "aaa", "bbb", "red", true, "ccc");
 
             budgetBoardAccountService.deleteBoardAccount(accountId, boardId);
 
@@ -204,8 +207,8 @@ public class BudgetBoardAccountServiceTests {
             var accountId1 = UUID.randomUUID();
             var accountId2 = UUID.randomUUID();
 
-            budgetBoardAccountService.addBoardAccount(accountId1, boardId, "aaa1", "bbb", true, "ccc");
-            budgetBoardAccountService.addBoardAccount(accountId2, boardId, "aaa2", "bbb", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId1, boardId, "aaa1", "bbb", "red", true, "ccc");
+            budgetBoardAccountService.addBoardAccount(accountId2, boardId, "aaa2", "bbb", "red", true, "ccc");
 
             budgetBoardAccountService.deleteBoardAccount(accountId1, boardId);
 

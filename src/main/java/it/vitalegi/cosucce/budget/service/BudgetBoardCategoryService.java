@@ -18,7 +18,7 @@ import java.util.UUID;
 public class BudgetBoardCategoryService {
     final BudgetBoardCategoryRepository budgetBoardCategoryRepository;
 
-    public void addBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String etag) {
+    public void addBoardCategory(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String etag) {
         if (categoryId == null) {
             throw new IllegalArgumentException("CategoryId is missing");
         }
@@ -34,11 +34,11 @@ public class BudgetBoardCategoryService {
         if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
-        budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, icon, enabled, etag);
+        budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, icon, color, enabled, etag);
         log.info("Added Category {} on board {}. Etag: {}", categoryId, boardId, etag);
     }
 
-    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, boolean enabled, String newEtag, String oldEtag) {
+    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String newEtag, String oldEtag) {
         if (categoryId == null) {
             throw new IllegalArgumentException("CategoryId is missing");
         }
@@ -61,7 +61,7 @@ public class BudgetBoardCategoryService {
         if (!existing.getEtag().equals(oldEtag)) {
             throw new ETagNotMatchedException(existing.getEtag(), oldEtag, categoryId, "BudgetCategory");
         }
-        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, enabled, newEtag);
+        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, color, enabled, newEtag);
         log.info("Updated Category {} on board {}. ETag: {} => {}", categoryId, boardId, oldEtag, newEtag);
     }
 
@@ -80,6 +80,7 @@ public class BudgetBoardCategoryService {
         out.setBoardId(entity.getBoardId());
         out.setLabel(entity.getLabel());
         out.setIcon(entity.getIcon());
+        out.setColor(entity.getColor());
         out.setEnabled(entity.getEnabled());
         out.setEtag(entity.getEtag());
         out.setCreationDate(entity.getCreationDate());
