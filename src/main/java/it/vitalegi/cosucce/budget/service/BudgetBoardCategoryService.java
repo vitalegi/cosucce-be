@@ -65,6 +65,10 @@ public class BudgetBoardCategoryService {
         log.info("Updated Category {} on board {}. ETag: {} => {}", categoryId, boardId, oldEtag, newEtag);
     }
 
+    public List<BudgetBoardCategory> getVisibleCategories(UUID userId) {
+        return budgetBoardCategoryRepository.getVisibleEntities(userId).stream().map(this::mapBudgetBoardCategory).toList();
+    }
+
     public List<BudgetBoardCategory> getBoardCategories(UUID boardId) {
         return budgetBoardCategoryRepository.getEntitiesByBoardId(boardId).stream().map(this::mapBudgetBoardCategory).toList();
     }

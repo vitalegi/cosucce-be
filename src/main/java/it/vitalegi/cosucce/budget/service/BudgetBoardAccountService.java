@@ -68,6 +68,10 @@ public class BudgetBoardAccountService {
         log.info("Updated Account {} on board {}. ETag: {} => {}", accountId, boardId, oldEtag, newEtag);
     }
 
+    public List<BudgetBoardAccount> getVisibleAccounts(UUID userId) {
+        return budgetBoardAccountRepository.getVisibleEntities(userId).stream().map(this::mapBudgetBoardAccount).toList();
+    }
+
     public List<BudgetBoardAccount> getBoardAccounts(UUID boardId) {
         return budgetBoardAccountRepository.getEntitiesByBoardId(boardId).stream().map(this::mapBudgetBoardAccount).toList();
     }

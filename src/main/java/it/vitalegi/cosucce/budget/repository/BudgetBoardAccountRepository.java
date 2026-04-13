@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.repository;
 
 import it.vitalegi.cosucce.db.tables.records.BudgetBoardAccountRecord;
+import it.vitalegi.cosucce.db.tables.records.BudgetBoardCategoryRecord;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -10,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_ACCOUNT;
+import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_CATEGORY;
+import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_USER;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,6 +48,15 @@ public class BudgetBoardAccountRepository {
 
     public Result<BudgetBoardAccountRecord> getEntitiesByBoardId(UUID boardId) {
         return dsl.selectFrom(BUDGET_BOARD_ACCOUNT.where(BUDGET_BOARD_ACCOUNT.BOARD_ID.eq(boardId))).fetch();
+    }
+
+    public Result<BudgetBoardAccountRecord> getVisibleEntities(UUID userId) {
+        return dsl.select(BUDGET_BOARD_ACCOUNT.fields()) //
+                .from(BUDGET_BOARD_ACCOUNT) //
+                .join(BUDGET_BOARD_USER) //
+                .on(BUDGET_BOARD_USER.BOARD_ID.eq(BUDGET_BOARD_ACCOUNT.BOARD_ID)) //
+                .where(BUDGET_BOARD_USER.USER_ID.eq(userId)) //
+                .fetchInto(BUDGET_BOARD_ACCOUNT);
     }
 
     public void deleteEntityById(UUID accountId) {

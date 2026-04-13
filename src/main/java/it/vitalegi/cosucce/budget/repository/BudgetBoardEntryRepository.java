@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_ENTRY;
+import static it.vitalegi.cosucce.db.Tables.BUDGET_BOARD_USER;
 
 @Repository
 @RequiredArgsConstructor
@@ -51,6 +52,15 @@ public class BudgetBoardEntryRepository {
 
     public Result<BudgetBoardEntryRecord> getEntitiesByBoardId(UUID boardId) {
         return dsl.selectFrom(BUDGET_BOARD_ENTRY.where(BUDGET_BOARD_ENTRY.BOARD_ID.eq(boardId))).fetch();
+    }
+
+    public Result<BudgetBoardEntryRecord> getVisibleEntities(UUID userId) {
+        return dsl.select(BUDGET_BOARD_ENTRY.fields()) //
+                .from(BUDGET_BOARD_ENTRY) //
+                .join(BUDGET_BOARD_USER) //
+                .on(BUDGET_BOARD_USER.BOARD_ID.eq(BUDGET_BOARD_ENTRY.BOARD_ID)) //
+                .where(BUDGET_BOARD_USER.USER_ID.eq(userId)) //
+                .fetchInto(BUDGET_BOARD_ENTRY);
     }
 
     public void deleteEntityById(UUID entryId) {

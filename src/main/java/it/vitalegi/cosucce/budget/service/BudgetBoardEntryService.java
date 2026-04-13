@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
+import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import it.vitalegi.cosucce.budget.model.BudgetBoardEntry;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardAccountRepository;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;
@@ -62,6 +63,9 @@ public class BudgetBoardEntryService {
         log.info("Updated Entry {} on board {}. ETag: {} => {}", entryId, boardId, oldEtag, newEtag);
     }
 
+    public List<BudgetBoardEntry> getVisibleEntries(UUID userId) {
+        return budgetBoardEntryRepository.getVisibleEntities(userId).stream().map(this::mapBudgetBoardEntry).toList();
+    }
     public List<BudgetBoardEntry> getBoardEntries(UUID boardId) {
         return budgetBoardEntryRepository.getEntitiesByBoardId(boardId).stream().map(this::mapBudgetBoardEntry).toList();
     }
