@@ -44,7 +44,7 @@ Then run the application
 ### From maven, for local development
 
 ```bash
-./mvnw compile exec:java
+./mvnw compile exec:java -Dorg.jooq.no-tips=true -Dorg.jooq.no-logo=true
 ```
 
 ### In production

@@ -1,6 +1,7 @@
 package it.vitalegi.cosucce.budget.resource;
 
 import it.vitalegi.cosucce.MockAuth;
+import it.vitalegi.cosucce.budget.constant.BudgetCategoryType;
 import it.vitalegi.cosucce.budget.dto.BudgetBoardCategoryAddOrUpdateRequest;
 import it.vitalegi.cosucce.security.exception.UnauthorizedBoardAccessException;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
 
         MockHttpServletRequestBuilder request() {
             return post("/budget/board/" + boardId + "/category") //
-                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().categoryId(UUID.randomUUID()).label("aaa").icon("bbb").enabled(true).etag("ccc").build())) //
+                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().categoryId(UUID.randomUUID()).label("aaa").type(BudgetCategoryType.DEBIT).icon("bbb").enabled(true).etag("ccc").build())) //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
     }
@@ -66,13 +67,14 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "aaa");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", BudgetCategoryType.CREDIT, "bbb", "red", true, "aaa");
             mockMvc.perform(request(categoryId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));
             var actual = budgetBoardCategoryService.getBoardCategories(boardId).get(0);
             assertEquals(categoryId, actual.getCategoryId());
             assertEquals("xxx", actual.getLabel());
+            assertEquals(BudgetCategoryType.DEBIT, actual.getType());
         }
 
         @Test
@@ -95,7 +97,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
 
         MockHttpServletRequestBuilder request(UUID categoryId) {
             return put("/budget/board/" + boardId + "/category") //
-                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().categoryId(categoryId).label("xxx").icon("xxx").enabled(true).etag("xxx").build())) //
+                    .content(asString(BudgetBoardCategoryAddOrUpdateRequest.builder().categoryId(categoryId).label("xxx").type(BudgetCategoryType.DEBIT).icon("xxx").enabled(true).etag("xxx").build())) //
                     .header("x-etag", "aaa") //
                     .contentType(MediaType.APPLICATION_JSON).with(csrf());
         }
@@ -106,11 +108,13 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_responseContainsData() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", BudgetCategoryType.DEBIT, "bbb", "red", true, "ccc");
             mockMvc.perform(request(boardId).with(boardMember)) //
                     .andExpect(status().isOk()) //
                     .andExpect(jsonPath("$[0].boardId").value(boardId.toString())) //
                     .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString())) //
+                    .andExpect(jsonPath("$[0].label").value("aaa")) //
+                    .andExpect(jsonPath("$[0].type").value("DEBIT")) //
                     .andExpect(jsonPath("$[0].icon").value("bbb")) //
                     .andExpect(jsonPath("$[0].color").value("red"))
                     .andExpect(jsonPath("$[0].creationDate").exists()) //
@@ -149,7 +153,7 @@ public class BudgetBoardCategoryResourceTests extends AbstractBudgetResourceTest
         @Test
         void when_authenticated_then_ok() throws Exception {
             var categoryId = UUID.randomUUID();
-            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", "bbb", "red", true, "ccc");
+            budgetBoardCategoryService.addBoardCategory(categoryId, boardId, "aaa", BudgetCategoryType.DEBIT, "bbb", "red", true, "ccc");
             mockMvc.perform(request(boardId, categoryId).with(boardOwner)) //
                     .andExpect(status().isOk()) //
                     .andExpect(content().string(""));

@@ -151,10 +151,10 @@
             <column name="board_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="etag" type="varchar(50)">
+            <column name="label" type="varchar(500)">
                 <constraints nullable="false"/>
             </column>
-            <column name="label" type="varchar(500)">
+            <column name="type" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="icon" type="varchar(100)">
@@ -164,6 +164,9 @@
                 <constraints nullable="true"/>
             </column>
             <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="etag" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="creation_date" type="datetime">

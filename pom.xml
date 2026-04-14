@@ -198,6 +198,12 @@
                                             <enumConverter>true</enumConverter>
                                             <includeExpression>.*\.budget_board_role</includeExpression>
                                         </forcedType>
+                                        <forcedType>
+                                            <userType>it.vitalegi.cosucce.budget.constant.BudgetCategoryType</userType>
+                                            <enumConverter>true</enumConverter>
+                                            <includeExpression>budget_board_category\.type</includeExpression>
+                                        </forcedType>
+
                                     </forcedTypes>
                                 </database>
                                 <target>

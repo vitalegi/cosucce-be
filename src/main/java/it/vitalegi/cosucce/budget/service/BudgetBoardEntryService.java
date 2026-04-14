@@ -1,7 +1,6 @@
 package it.vitalegi.cosucce.budget.service;
 
 import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
-import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import it.vitalegi.cosucce.budget.model.BudgetBoardEntry;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardAccountRepository;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;

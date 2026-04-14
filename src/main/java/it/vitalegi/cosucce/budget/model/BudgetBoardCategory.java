@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce.budget.model;
 
+import it.vitalegi.cosucce.budget.constant.BudgetCategoryType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public class BudgetBoardCategory {
     private UUID categoryId;
     private UUID boardId;
     private String label;
+    private BudgetCategoryType type;
     private String icon;
     private String color;
     private boolean enabled;

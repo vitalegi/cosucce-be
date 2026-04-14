@@ -1,5 +1,6 @@
 package it.vitalegi.cosucce.budget.service;
 
+import it.vitalegi.cosucce.budget.constant.BudgetCategoryType;
 import it.vitalegi.cosucce.budget.exception.ETagNotMatchedException;
 import it.vitalegi.cosucce.budget.model.BudgetBoardCategory;
 import it.vitalegi.cosucce.budget.repository.BudgetBoardCategoryRepository;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class BudgetBoardCategoryService {
     final BudgetBoardCategoryRepository budgetBoardCategoryRepository;
 
-    public void addBoardCategory(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String etag) {
+    public void addBoardCategory(UUID categoryId, UUID boardId, String label, BudgetCategoryType type, String icon, String color, boolean enabled, String etag) {
         if (categoryId == null) {
             throw new IllegalArgumentException("CategoryId is missing");
         }
@@ -27,6 +28,9 @@ public class BudgetBoardCategoryService {
         }
         if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Type is missing");
         }
         if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
@@ -34,11 +38,11 @@ public class BudgetBoardCategoryService {
         if (StringUtil.isNullOrEmpty(etag)) {
             throw new IllegalArgumentException("ETag is missing");
         }
-        budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, icon, color, enabled, etag);
+        budgetBoardCategoryRepository.addEntity(categoryId, boardId, label, type, icon, color, enabled, etag);
         log.info("Added Category {} on board {}. Etag: {}", categoryId, boardId, etag);
     }
 
-    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, String icon, String color, boolean enabled, String newEtag, String oldEtag) {
+    public void updateBoardCategory(UUID categoryId, UUID boardId, String label, BudgetCategoryType type, String icon, String color, boolean enabled, String newEtag, String oldEtag) {
         if (categoryId == null) {
             throw new IllegalArgumentException("CategoryId is missing");
         }
@@ -47,6 +51,9 @@ public class BudgetBoardCategoryService {
         }
         if (StringUtil.isNullOrEmpty(label)) {
             throw new IllegalArgumentException("Label is missing");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Type is missing");
         }
         if (StringUtil.isNullOrEmpty(icon)) {
             throw new IllegalArgumentException("Icon is missing");
@@ -61,7 +68,7 @@ public class BudgetBoardCategoryService {
         if (!existing.getEtag().equals(oldEtag)) {
             throw new ETagNotMatchedException(existing.getEtag(), oldEtag, categoryId, "BudgetCategory");
         }
-        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, icon, color, enabled, newEtag);
+        budgetBoardCategoryRepository.updateEntity(categoryId, boardId, label, type, icon, color, enabled, newEtag);
         log.info("Updated Category {} on board {}. ETag: {} => {}", categoryId, boardId, oldEtag, newEtag);
     }
 
@@ -83,6 +90,7 @@ public class BudgetBoardCategoryService {
         out.setCategoryId(entity.getCategoryId());
         out.setBoardId(entity.getBoardId());
         out.setLabel(entity.getLabel());
+        out.setType(entity.getType());
         out.setIcon(entity.getIcon());
         out.setColor(entity.getColor());
         out.setEnabled(entity.getEnabled());
